@@ -1,0 +1,135 @@
+server:
+    port: 8080
+
+application:
+    email:
+        from: no-reply@beatthecodes.com
+    domain: ${APPLICATION_DOMAIN:http://localhost:3000}
+    security:
+        topic-idea:
+            secret-key: ${APPLICATION_SECURITY_TOPIC_IDEA_SECRET_KEY:placeholder}
+        allowed-origins: ${APPLICATION_SECURITY_ALLOWED_ORIGINS:http://localhost:3000,https://my-production-domain.com,http://localhost:8080}
+        jwt:
+            secret-key: ${APPLICATION_SECURITY_JWT_SECRET_KEY:PLACEHOLDER}  #TODO CHANGE FOR PROD
+            expiration: 86400000 #24 hours
+
+ai:
+    openrouter:
+        api:
+            key: ${AI_OPENROUTER_API_KEY:PLACEHOLDER}
+            url: https://openrouter.ai/api/v1
+    anthropic:
+        api:
+            key: ${AI_ANTHROPIC_API_KEY:PLACEHOLDER}
+            url: https://api.anthropic.com/v1/messages
+    deepseek:
+        api:
+            key: ${AI_DEEPSEEK_API_KEY:PLACEHOLDER}
+            url: https://api.deepseek.com
+    play:
+        user:
+            id: ${AI_PLAY_USER_ID:PLACEHOLDER}
+            key: ${AI_PLAY_USER_KEY:PLACEHOLDER}
+        api:
+            url: https://api.play.ai/api/v1/tts
+        job:
+            url: https://api.play.ai/api/v1/tts/%s
+    groq:
+        api:
+            key: ${AI_GROQ_API_KEY:PLACEHOLDER}
+            url: https://api.groq.com/openai/v1
+
+aws:
+    access:
+        key:
+            id: ${AWS_ACCESS_KEY_ID:your-access-key}
+    secret:
+        access:
+            key: ${AWS_SECRET_ACCESS_KEY:your-secret-key}
+    s3:
+        region: ${AWS_REGION:us-east-1}
+        bucket: ${AWS_S3_BUCKET:jeduappstorage}
+        bucket_db_backup: ${AWS_S3_BUCKET_DB_BACKUP:jeduappstorage}
+
+clerk:
+  issuer: https://YOUR-CLERK-DOMAIN
+  jwks: https://YOUR-CLERK-DOMAIN/.well-known/jwks.json
+  audience: YOUR_API_AUDIENCE
+
+spring:
+    application:
+        name: notecastai
+    datasource:
+        url: ${SPRING_DATASOURCE_URL}
+        driver-class-name: org.postgresql.Driver
+        username: ${SPRING_DATASOURCE_USERNAME:PLACEHOLDER}
+        password: ${SPRING_DATASOURCE_PASSWORD:PLACEHOLDER}
+    jpa:
+        hibernate:
+            ddl-auto: validate
+    flyway:
+        enabled: true
+        locations: classpath:migration
+        baseline-on-migrate: false
+    profiles:
+        active: ${SPRING_PROFILES_ACTIVE:local}
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: ${APPLICATION_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID:placeholder}
+                        client-secret: ${APPLICATION_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET:placeholder}
+                        scope:
+                            - email
+                            - profile
+                provider:
+                    google:
+                        authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+                        token-uri: https://oauth2.googleapis.com/token
+                        user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+                        user-name-attribute: sub
+    mail:
+        host: email-smtp.${AWS_REGION:us-east-1}.amazonaws.com
+        port: 587
+        username: ${SPRING_MAIL_USERNAME:PLACEHOLDER}
+        password: ${SPRING_MAIL_PASSWORD:PLACEHOLDER}
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    connectiontimeout: 5000
+                    timeout: 5000
+
+job:
+    topic-generation:
+        cron: "0 0 0/12 * * *"  # base cron schedule, used for the initial base time
+        category-offset: 0.5    # offset in hours between each category
+        period: 12              # total period in hours between runs (not fixated in code)
+    user-streak:
+        cron: 0 0 0 * * * # every day
+
+springdoc:
+    swagger-ui:
+        path: /swagger-ui.html
+        operationsSorter: method
+        defaultModelsExpandDepth: -1
+
+logging:
+    level:
+        org.hibernate.SQL: info
+        org.hibernate.type.descriptor.sql.BasicBinder: info
+        cz.kimot.jedu: DEBUG
+        org.springframework.security: DEBUG
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info
+
+backup:
+    service:
+        enabled: true
