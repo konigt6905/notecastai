@@ -11,10 +11,14 @@ import java.util.Optional;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseRepository<T, ID, D extends JpaRepository<T, ID>> {
 
-   protected final D dao;
+    protected final D dao;
 
-   public T getById(ID id) {
+    public T getById(ID id) {
         return dao.getReferenceById(id);
+    }
+
+    public void delete(T entity) {
+        dao.delete(entity);
     }
 
     public Page<T> findAll(Pageable pageable) {

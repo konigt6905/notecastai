@@ -33,8 +33,21 @@ public class VoiceNoteEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "note_id")
+    private NoteEntity note;
+
     @Column(name = "filename", nullable = false)
     private String filename;
+
+    @Column(name = "original_filename", nullable = false)
+    private String originalFilename;
+
+    @Column(name = "content_type", nullable = false)
+    private String contentType;
+
+    @Column(name = "file_size", nullable = false)
+    private Long fileSize;
 
     @Column(name = "user_instructions", nullable = false)
     private String userInstructions;
@@ -42,14 +55,22 @@ public class VoiceNoteEntity extends BaseEntity {
     @Column(name = "s3_path", nullable = false)
     private String s3Path;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "note_id")
-    private NoteEntity note;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private AudioStatus status;
 
     @Lob
     @Column(name = "transcript")
     private String transcript;
 
-    @Column(name = "language")
+    @Column(name = "language", length = 10)
     private String language;
+
+    @Column(name = "duration_seconds")
+    private Integer durationSeconds;
+
+    @Lob
+    @Column(name = "error_message")
+    private String errorMessage;
+
 }

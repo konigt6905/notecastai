@@ -14,10 +14,10 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/v1/tags")
 @RequiredArgsConstructor
 @Validated
-public class TagController {
+public class TagControllerV1 {
 
     private final TagService tagService;
 

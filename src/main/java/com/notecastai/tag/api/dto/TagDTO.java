@@ -1,12 +1,11 @@
 package com.notecastai.tag.api.dto;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
-@Value
 @Builder
+@Data
 public class TagDTO {
-    Long id;
-    Long userId;
-    String name;
+    private Long id;
+    private String name;
 }

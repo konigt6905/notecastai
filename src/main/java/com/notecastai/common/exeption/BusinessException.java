@@ -13,6 +13,9 @@ public class BusinessException extends RuntimeException {
 
     @Getter
     public enum BusinessCode {
+        INTERNAL_ERROR("Internal server error"),
+        INVALID_REQUEST("Invalid request"),
+        CLERK_USER_ID_MISSING("Missing authenticated Clerk user id"),
         ENTITY_NOT_FOUND("Entity not found"),
         VALIDATION_FAILED("Validation failed"),
         TAG_MUST_NOT_BE_BLANK("Validation failed, tag name must not be blank."),

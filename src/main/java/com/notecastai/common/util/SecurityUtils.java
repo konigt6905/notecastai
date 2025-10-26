@@ -1,8 +1,11 @@
 package com.notecastai.common.util;
 
+import com.notecastai.common.exeption.BusinessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+
+import static com.notecastai.common.exeption.BusinessException.BusinessCode.CLERK_USER_ID_MISSING;
 
 public final class SecurityUtils {
     private SecurityUtils() {}
@@ -15,4 +18,11 @@ public final class SecurityUtils {
         }
         return null;
     }
+
+    public static String getCurrentClerkUserIdOrThrow() {
+        String id = getCurrentClerkUserId();
+        if (id == null) throw BusinessException.of(CLERK_USER_ID_MISSING);
+        return id;
+    }
+
 }

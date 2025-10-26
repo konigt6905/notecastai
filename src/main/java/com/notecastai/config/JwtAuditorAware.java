@@ -1,6 +1,7 @@
 package com.notecastai.config;
 
 import com.notecastai.common.util.SecurityUtils;
+import com.notecastai.user.domain.UserEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.AuditorAware;
@@ -16,8 +17,8 @@ public class JwtAuditorAware implements AuditorAware<Long> {
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-        String clerkUserId = SecurityUtils.getCurrentClerkUserId();
-        if (clerkUserId == null) return Optional.empty();
-        return users.findIdByClerkUserId(clerkUserId);
+        String clerkUserId = SecurityUtils.getCurrentClerkUserIdOrThrow();
+        UserEntity user = users.getByClerkUserId(clerkUserId);
+        return Optional.of(user.getId());
     }
 }

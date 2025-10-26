@@ -1,12 +1,13 @@
-package com.notecastai.note.infrastructure.repo;
+package com.notecastai.voicenote.infrastructure.repo;
 
 import com.notecastai.common.BaseRepository;
 import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.common.query.CriteriaQueryBuilder;
 import com.notecastai.common.util.SecurityUtils;
-import com.notecastai.note.api.dto.NotesQueryParam;
-import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
+import com.notecastai.voicenote.api.dto.VoiceNoteQueryParam;
+import com.notecastai.voicenote.domain.VoiceNoteEntity;
+import com.notecastai.voicenote.repo.VoiceNoteDao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -20,39 +21,38 @@ import static com.notecastai.common.exeption.BusinessException.BusinessCode.ENTI
 
 @Slf4j
 @Repository
-public class NoteRepository extends BaseRepository<NoteEntity, Long, NoteDao> {
+public class VoiceNoteRepository extends BaseRepository<VoiceNoteEntity, Long, VoiceNoteDao> {
 
     @PersistenceContext
     private EntityManager entityManager;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    protected NoteRepository(EntityManager noteDaoentityManager, UserRepository userRepository, NoteDao noteDao) {
-        super(noteDao);
-        this.entityManager = noteDaoentityManager;
+    protected VoiceNoteRepository(EntityManager entityManager, UserRepository userRepository, VoiceNoteDao voiceNoteDao) {
+        super(voiceNoteDao);
+        this.entityManager = entityManager;
         this.userRepository = userRepository;
     }
 
-    public NoteEntity getOrThrow(Long id) {
+    public VoiceNoteEntity getOrThrow(Long id) {
         return findById(id).orElseThrow(() ->
-                BusinessException.of(ENTITY_NOT_FOUND.append(" Note with id %d not found".formatted(id)))
+                BusinessException.of(ENTITY_NOT_FOUND.append(" VoiceNote with id %d not found".formatted(id)))
         );
     }
 
-    public Page<NoteEntity> findAll(NotesQueryParam params, Pageable pageable) {
+    public Page<VoiceNoteEntity> findAll(VoiceNoteQueryParam params, Pageable pageable) {
         SecurityUtils.getCurrentClerkUserIdOrThrow();
-        return CriteriaQueryBuilder.forEntity(NoteEntity.class, entityManager)
+        return CriteriaQueryBuilder.forEntity(VoiceNoteEntity.class, entityManager)
                 .where(b -> b
                         .equal("user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
-                        .joinIn("tags", "id", params.getTagIds())  // Changed from joinEqual to joinIn
+                        .equal("status", params.getStatus())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
                 )
-                .distinct()
                 .paginate(pageable);
     }
 
     @Override
-    public Optional<NoteEntity> findById(Long id) {
+    public Optional<VoiceNoteEntity> findById(Long id) {
         return super.findById(id);
     }
 }

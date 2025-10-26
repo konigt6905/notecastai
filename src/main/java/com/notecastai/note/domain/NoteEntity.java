@@ -4,16 +4,13 @@ import com.notecastai.common.BaseEntity;
 import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.user.domain.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @SuperBuilder
+
 @Entity
 @Table(
         name = "note",
@@ -22,6 +19,11 @@ import java.util.List;
                 @Index(name = "idx_note_created", columnList = "created_date")
         }
 )
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class NoteEntity extends BaseEntity {
 
     @Id
@@ -36,8 +38,18 @@ public class NoteEntity extends BaseEntity {
     private String title;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "knowledge_base")
     private String knowledgeBase;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "formatted_note")
+    private String formattedNote;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "current_formate", nullable = false, length = 40)
+    private FormateType currentFormate;
 
     /** Normalized tags (Many-to-Many via join table). */
     @ManyToMany(fetch = FetchType.LAZY)
@@ -51,5 +63,32 @@ public class NoteEntity extends BaseEntity {
             }
     )
     private List<TagEntity> tags = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "note_ai_action",
+            joinColumns = @JoinColumn(name = "note_id"),
+            indexes = @Index(name = "idx_ai_action_note", columnList = "note_id")
+    )
+    @OrderColumn(name = "position") // list order
+    private List<AiAction> proposedAiActions = new ArrayList<>();
+
+    // ---------- Inner value type ----------
+
+    @Embeddable
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class AiAction {
+
+        @Column(name = "name", nullable = false, length = 200)
+        private String name;
+
+        @Lob
+        @Column(name = "prompt", nullable = false)
+        private String prompt;
+    }
 }
 
