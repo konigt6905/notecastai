@@ -1,7 +1,7 @@
 package com.notecastai.tag.service.impl;
 
 import com.notecastai.common.exeption.BusinessException;
-import com.notecastai.tag.api.TagMapper;
+import com.notecastai.tag.api.mapper.TagMapper;
 import com.notecastai.tag.api.dto.TagCreateRequest;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.tag.domain.TagEntity;

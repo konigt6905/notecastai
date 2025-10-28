@@ -2,7 +2,7 @@ package com.notecastai.user.service.impl;
 
 import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.tag.service.TagService;
-import com.notecastai.user.api.UserMapper;
+import com.notecastai.user.api.mapper.UserMapper;
 import com.notecastai.user.api.dto.UserCreateRequest;
 import com.notecastai.user.api.dto.UserDTO;
 import com.notecastai.user.domain.UserEntity;

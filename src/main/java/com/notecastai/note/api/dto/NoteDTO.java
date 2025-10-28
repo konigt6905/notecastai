@@ -31,4 +31,5 @@ public class NoteDTO {
     private List<AiActionDto> proposedAiActions;
     @NotNull
     private Boolean inactive;
+
 }

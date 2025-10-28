@@ -34,4 +34,8 @@ public class TagRepository extends BaseRepository<TagEntity, Long, TagDao> {
         return dao.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> BusinessException.of(ENTITY_NOT_FOUND.append(" Tag with id %d not found for user %d".formatted(id, userId))));
     }
+
+    public TagEntity findByNameAndUserId(String trim, Long userId) {
+        return dao.findByNameAndUser_Id(trim, userId);
+    }
 }

@@ -1,14 +1,13 @@
 package com.notecastai.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -29,6 +28,7 @@ import java.time.Instant;
         parameters = @ParamDef(name = "currentUserId", type = Long.class)
 )
 @Filter(name = "ownerFilter", condition = "created_by = :currentUserId")
+@SoftDelete(columnName = "inactive")
 public abstract class BaseEntity implements Serializable {
 
     @Serial
@@ -57,7 +57,6 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "updated_by")
     private Long updatedBy;
 
-    @Builder.Default
     private boolean inactive = false;
 
     public void deactivate() {

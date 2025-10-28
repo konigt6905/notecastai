@@ -3,11 +3,9 @@ package com.notecastai.voicenote.domain;
 import com.notecastai.common.BaseEntity;
 import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.user.domain.UserEntity;
+import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -52,22 +50,37 @@ public class VoiceNoteEntity extends BaseEntity {
     @Column(name = "user_instructions", nullable = false)
     private String userInstructions;
 
-    @Column(name = "s3_path", nullable = false)
-    private String s3Path;
+    @Column(name = "s3_file_url", nullable = false)
+    private String s3FileUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private AudioStatus status;
+    private VoiceNoteStatus status;
 
     @Lob
     @Column(name = "transcript")
     private String transcript;
 
-    @Column(name = "language", length = 10)
-    private String language;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "word_timestamps_json", columnDefinition = "TEXT")
+    private String wordTimestampsJson;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "segment_timestamps_json", columnDefinition = "TEXT")
+    private String segmentTimestampsJson;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(name = "language")
+    private TranscriptionLanguage language = TranscriptionLanguage.AUTO;
 
     @Column(name = "duration_seconds")
     private Integer durationSeconds;
+
+    @Column(name = "transcript_processing_time_ms")
+    private Long transcriptProcessingTimeMs;
 
     @Lob
     @Column(name = "error_message")

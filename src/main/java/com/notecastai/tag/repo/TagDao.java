@@ -19,4 +19,6 @@ public interface TagDao extends JpaRepository<TagEntity, Long>, JpaSpecification
 
     Optional<TagEntity> findByIdAndUser_Id(Long id, Long userId);
 
+    TagEntity findByNameAndUser_Id(String trim, Long userId);
+
 }

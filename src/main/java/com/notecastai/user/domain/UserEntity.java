@@ -1,11 +1,9 @@
 package com.notecastai.user.domain;
 
 import com.notecastai.common.BaseEntity;
+import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -25,4 +23,10 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "clerk_user_id", nullable = false, unique = true)
     private String clerkUserId;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(name = "preferred_language")
+    private TranscriptionLanguage preferredLanguage = TranscriptionLanguage.AUTO;
+
 }

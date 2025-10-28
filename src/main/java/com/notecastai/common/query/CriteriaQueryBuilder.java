@@ -1,10 +1,12 @@
 package com.notecastai.common.query;
 
+import com.notecastai.common.BaseEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ public class CriteriaQueryBuilder<T extends Serializable> {
 
     private final List<Function<Ctx<T>, Predicate>> predicateSuppliers = new ArrayList<>();
     private boolean distinct = false;
+    private boolean includeInactive = false;
 
     public static <T extends Serializable> CriteriaQueryBuilder<T> forEntity(Class<T> entityClass,
                                                                              EntityManager em) {
@@ -40,29 +43,43 @@ public class CriteriaQueryBuilder<T extends Serializable> {
         return this;
     }
 
-    /** Execute and return a Page. */
-    public Page<T> paginate(Pageable pageable) {
-        Ctx<T> ctx = new Ctx<>(em, entityClass);
-        CriteriaQuery<T> cq = ctx.cb.createQuery(entityClass);
-        Root<T> root = cq.from(entityClass);
-
-        List<Predicate> preds = buildPredicates(ctx.withRoot(root));
-        if (!preds.isEmpty()) cq.where(preds.toArray(Predicate[]::new));
-        cq.select(root);
-        cq.distinct(distinct);
-        applySort(ctx, root, cq, pageable.getSort());
-
-        TypedQuery<T> dataQuery = em.createQuery(cq)
-                .setFirstResult((int) pageable.getOffset())
-                .setMaxResults(pageable.getPageSize());
-
-        List<T> content = dataQuery.getResultList();
-        long total = count(ctx, preds);
-
-        return new PageImpl<>(content, pageable, total);
+    public CriteriaQueryBuilder<T> includeInactive() {
+        this.includeInactive = true;
+        return this;
     }
 
-    // ---------- internals ----------
+    public Page<T> paginate(Pageable pageable) {
+        Session session = null;
+        if (includeInactive && BaseEntity.class.isAssignableFrom(entityClass)) {
+            session = em.unwrap(Session.class);
+            session.enableFilter("none");
+        }
+
+        try {
+            Ctx<T> ctx = new Ctx<>(em, entityClass);
+            CriteriaQuery<T> cq = ctx.cb.createQuery(entityClass);
+            Root<T> root = cq.from(entityClass);
+
+            List<Predicate> preds = buildPredicates(ctx.withRoot(root));
+            if (!preds.isEmpty()) cq.where(preds.toArray(Predicate[]::new));
+            cq.select(root);
+            cq.distinct(distinct);
+            applySort(ctx, root, cq, pageable.getSort());
+
+            TypedQuery<T> dataQuery = em.createQuery(cq)
+                    .setFirstResult((int) pageable.getOffset())
+                    .setMaxResults(pageable.getPageSize());
+
+            List<T> content = dataQuery.getResultList();
+            long total = count(ctx, preds);
+
+            return new PageImpl<>(content, pageable, total);
+        } finally {
+            if (session != null && includeInactive) {
+                // Re-enable the soft delete filter
+            }
+        }
+    }
 
     private List<Predicate> buildPredicates(Ctx<T> ctx) {
         List<Predicate> out = new ArrayList<>();
@@ -77,11 +94,7 @@ public class CriteriaQueryBuilder<T extends Serializable> {
         CriteriaQuery<Long> cq = ctx.cb.createQuery(Long.class);
         Root<T> root = cq.from(entityClass);
         cq.select(ctx.cb.countDistinct(root));
-        if (!preds.isEmpty()) cq.where(preds.stream()
-                .map(p -> p) // rebuild against this root:
-                .toArray(Predicate[]::new));
-        // We must rebuild predicates for the new root (different instance)
-        // So we reconstruct them via suppliers again:
+
         List<Predicate> rebuilt = new ArrayList<>();
         for (Function<Ctx<T>, Predicate> s : predicateSuppliers) {
             Predicate p = s.apply(ctx.withRoot(root));
@@ -101,7 +114,6 @@ public class CriteriaQueryBuilder<T extends Serializable> {
         cq.orderBy(orders);
     }
 
-    /** Resolve simple dot-paths (e.g., "user.id"). */
     private Path<?> resolvePath(From<?, ?> from, String dotPath) {
         String[] parts = dotPath.split("\\.");
         Path<?> path = from;

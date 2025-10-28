@@ -14,6 +14,7 @@ import java.util.Map;
 public class TechnicalException extends RuntimeException {
 
     public enum Code {
+        AI_SERVICE_ERROR("Error during AI service call "),
         STORAGE_PRESIGN_URI_INVALID("Failed to build presigned URI for key: {key}"),
         EXTERNAL_SERVICE_ERROR("External service error: {service}"),
         INTERNAL_ERROR("Internal error");

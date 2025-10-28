@@ -1,11 +1,18 @@
 package com.notecastai.integration.ai;
 
+import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
+import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
+
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
 public interface TranscriptionService {
 
-    CompletableFuture<TranscriptionResult> transcribe(InputStream audioStream, String filename, String contentType);
+    CompletableFuture<TranscriptionResult> transcribeAudioFile(
+            InputStream audioStream,
+            String filename,
+            String contentType,
+            TranscriptionLanguage language
+    );
 
-    record TranscriptionResult(String transcript, String language, Integer durationSeconds) {}
 }

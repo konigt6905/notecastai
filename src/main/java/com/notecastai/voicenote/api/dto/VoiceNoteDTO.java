@@ -1,7 +1,7 @@
 package com.notecastai.voicenote.api.dto;
 
 
-import com.notecastai.voicenote.domain.AudioStatus;
+import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class VoiceNoteDTO {
     private String userInstructions;
     private String s3Path;
     @NotNull
-    private AudioStatus status;
+    private VoiceNoteStatus status;
     private Long noteId;
     private String transcript;
     private String language;
@@ -37,4 +37,5 @@ public class VoiceNoteDTO {
     private Instant createdDate;
     @NotNull
     private Instant updatedDate;
+
 }

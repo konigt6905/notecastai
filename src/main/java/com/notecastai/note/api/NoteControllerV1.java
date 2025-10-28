@@ -6,7 +6,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +34,13 @@ public class NoteControllerV1 {
 
     @GetMapping
     public Page<NoteDTO> findAll(@Valid @ModelAttribute NotesQueryParam params,
-                                 @PageableDefault Pageable pageable) {
+                                 @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return noteService.findAll(params, pageable);
     }
 
     @GetMapping
     public Page<NoteShortDTO> findAllShort(@Valid @ModelAttribute NotesQueryParam params,
-                                 @PageableDefault Pageable pageable) {
+                                           @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return noteService.findAllShort(params, pageable);
     }
 
@@ -53,10 +55,13 @@ public class NoteControllerV1 {
         return noteService.formateNoteKnowledgeBase(id, request);
     }
 
-    @PostMapping("/{id}/question")
-    public NoteQuestionResponse askQuestion(@PathVariable Long id,
-                                            @Valid @RequestBody NoteQuestionRequest request) {
-        return noteService.askQuestion(id, request);
+    @PostMapping("/{noteId}/ask")
+    public ResponseEntity<NoteQuestionResponse> askQuestion(
+            @PathVariable Long noteId,
+            @Valid @RequestBody NoteQuestionRequest request
+    ) {
+        NoteQuestionResponse response = noteService.askQuestion(noteId, request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/formats")
