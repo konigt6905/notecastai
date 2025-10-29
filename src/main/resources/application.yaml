@@ -21,17 +21,22 @@ spring:
   application:
     name: notecastai
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/notecastai}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/notecastai?currentSchema=notecastai}
     driver-class-name: org.postgresql.Driver
     username: ${SPRING_DATASOURCE_USERNAME:notecastai}
     password: ${SPRING_DATASOURCE_PASSWORD:notecastai123}
   jpa:
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: notecastai
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: false
+    schemas: notecastai
+    default-schema: notecastai
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
