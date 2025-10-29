@@ -30,7 +30,7 @@ public class NoteEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
@@ -39,12 +39,12 @@ public class NoteEntity extends BaseEntity {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "knowledge_base")
+    @Column(name = "knowledge_base", columnDefinition = "TEXT")
     private String knowledgeBase;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "formatted_note")
+    @Column(name = "formatted_note", columnDefinition = "TEXT")
     private String formattedNote;
 
     @Enumerated(EnumType.STRING)
@@ -52,6 +52,7 @@ public class NoteEntity extends BaseEntity {
     private FormateType currentFormate;
 
     /** Normalized tags (Many-to-Many via join table). */
+    @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "note_tag",
@@ -64,6 +65,7 @@ public class NoteEntity extends BaseEntity {
     )
     private List<TagEntity> tags = new ArrayList<>();
 
+    @Builder.Default
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "note_ai_action",
@@ -72,8 +74,6 @@ public class NoteEntity extends BaseEntity {
     )
     @OrderColumn(name = "position") // list order
     private List<AiAction> proposedAiActions = new ArrayList<>();
-
-    // ---------- Inner value type ----------
 
     @Embeddable
     @Getter
@@ -87,8 +87,7 @@ public class NoteEntity extends BaseEntity {
         private String name;
 
         @Lob
-        @Column(name = "prompt", nullable = false)
+        @Column(name = "prompt", columnDefinition = "TEXT", nullable = false)
         private String prompt;
     }
 }
-

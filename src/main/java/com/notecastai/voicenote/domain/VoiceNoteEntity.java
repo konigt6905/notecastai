@@ -27,7 +27,7 @@ public class VoiceNoteEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
@@ -58,7 +58,7 @@ public class VoiceNoteEntity extends BaseEntity {
     private VoiceNoteStatus status;
 
     @Lob
-    @Column(name = "transcript")
+    @Column(name = "transcript", columnDefinition = "TEXT")
     private String transcript;
 
     @Lob
@@ -83,7 +83,7 @@ public class VoiceNoteEntity extends BaseEntity {
     private Long transcriptProcessingTimeMs;
 
     @Lob
-    @Column(name = "error_message")
+    @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
 }

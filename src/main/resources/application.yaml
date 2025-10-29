@@ -21,24 +21,24 @@ spring:
   application:
     name: notecastai
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/notecastai}
     driver-class-name: org.postgresql.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:PLACEHOLDER}
-    password: ${SPRING_DATASOURCE_PASSWORD:PLACEHOLDER}
+    username: ${SPRING_DATASOURCE_USERNAME:notecastai}
+    password: ${SPRING_DATASOURCE_PASSWORD:notecastai123}
   jpa:
     hibernate:
       ddl-auto: validate
   flyway:
     enabled: true
-    locations: classpath:migration
+    locations: classpath:db/migration
     baseline-on-migrate: false
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
 clerk:
-  issuer: PLACEHOLDER
-  jwks: ${CLERK_JWKS:PLACEHOLDER}
-  audience: PLACEHOLDER
+  issuer: ${CLERK_ISSUER:PLACEHOLDER}
+  jwks: ${CLERK_JWKS:PLACEHOLDER}  # FE url +  /.well-known/jwks.json
+  audience: ${CLERK_AUDIENCE:PLACEHOLDER}
 
 ai:
   openrouter:

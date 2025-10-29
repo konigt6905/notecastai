@@ -49,7 +49,7 @@ public class VoiceNoteControllerV1 {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivate(@PathVariable Long id) {
-        voiceNoteService.deactivate(id);
+    public void delete(@PathVariable Long id) {
+        voiceNoteService.delete(id);
     }
 }

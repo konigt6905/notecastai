@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +37,7 @@ public class NoteControllerV1 {
         return noteService.findAll(params, pageable);
     }
 
-    @GetMapping
+    @GetMapping("/short")
     public Page<NoteShortDTO> findAllShort(@Valid @ModelAttribute NotesQueryParam params,
                                            @PageableDefault(size = 20, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return noteService.findAllShort(params, pageable);
@@ -56,12 +55,11 @@ public class NoteControllerV1 {
     }
 
     @PostMapping("/{noteId}/ask")
-    public ResponseEntity<NoteQuestionResponse> askQuestion(
+    public NoteQuestionResponse askQuestion(
             @PathVariable Long noteId,
             @Valid @RequestBody NoteQuestionRequest request
     ) {
-        NoteQuestionResponse response = noteService.askQuestion(noteId, request);
-        return ResponseEntity.ok(response);
+        return noteService.askQuestion(noteId, request);
     }
 
     @GetMapping("/formats")

@@ -19,7 +19,7 @@ public interface VoiceNoteService {
 
     Page<VoiceNoteShortDTO> findAllShort(VoiceNoteQueryParam params, Pageable pageable);
 
-    void deactivate(Long id);
+    void delete(Long id);
 
     void updateStatus(Long voiceNoteId, VoiceNoteStatus status);
 

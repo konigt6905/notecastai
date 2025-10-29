@@ -9,7 +9,7 @@ public interface TagService {
 
     TagDTO create(TagCreateRequest request);
 
-    void deactivateForUser(Long id, Long userId);
+    void deleteForUser(Long id, Long userId);
 
     TagDTO getForUser(Long id, Long userId);
 

@@ -109,9 +109,8 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
 
     @Override
     @Transactional
-    public void deactivate(Long id) {
+    public void delete(Long id) {
         VoiceNoteEntity entity = voiceNoteRepository.getOrThrow(id);
-        entity.deactivate();
         voiceNoteRepository.delete(entity);
     }
 

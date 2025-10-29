@@ -1,15 +1,18 @@
 package com.notecastai.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.jwt.*;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.*;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -22,6 +25,21 @@ public class SecurityConfig {
     private String audience;
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${application.domain:http://localhost:3000}") String feOrigin) {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(List.of(feOrigin));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+        cfg.setAllowedHeaders(List.of("Authorization","Content-Type","Accept"));
+        cfg.setAllowCredentials(true);
+        cfg.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cfg);
+        return source;
+    }
+
+    @Bean
     SecurityFilterChain security(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(auth -> auth
@@ -29,6 +47,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
         );
         http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));
+        http.cors(Customizer.withDefaults());
         return http.build();
     }
 

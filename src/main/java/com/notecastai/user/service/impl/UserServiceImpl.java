@@ -2,17 +2,21 @@ package com.notecastai.user.service.impl;
 
 import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.tag.service.TagService;
-import com.notecastai.user.api.mapper.UserMapper;
 import com.notecastai.user.api.dto.UserCreateRequest;
 import com.notecastai.user.api.dto.UserDTO;
+import com.notecastai.user.api.mapper.UserMapper;
 import com.notecastai.user.domain.UserEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
 import com.notecastai.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static com.notecastai.common.exeption.BusinessException.BusinessCode.CONFLICT;
 
@@ -59,15 +63,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<UserDTO> findByClerkUserId(String clerkUserId) {
+        return userRepository.findByClerkUserId(clerkUserId).map(mapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
         return userRepository.findAllPaged(pageable).map(mapper::toDto);
     }
 
     @Override
     @Transactional
-    public void deactivate(Long id) {
+    public void delete(Long id) {
         UserEntity e = userRepository.getOrThrow(id);
-        e.deactivate();
-        userRepository.save(e);
+        userRepository.delete(e);
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserDTO ensureUserExists(String clerkUserId) {
+        var user = userRepository.findByClerkUserId(clerkUserId);
+
+        if (user.isPresent()) {
+            return mapper.toDto(user.get());
+        }
+
+        try {
+            return mapper.toDto(userRepository.save(UserEntity.builder()
+                    .clerkUserId(clerkUserId)
+                    .build()));
+        } catch (DataIntegrityViolationException e) {
+            // If two parallel first requests race, unique constraint wins; just re-read.
+            return mapper.toDto(userRepository.getByClerkUserId(clerkUserId));
+        }
+    }
+
 }

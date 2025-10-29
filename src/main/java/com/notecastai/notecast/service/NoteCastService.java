@@ -19,7 +19,7 @@ public interface NoteCastService {
 
     List<NoteCastStyleDTO> listStyles();
 
-    void deactivate(Long id);
+    void delete(Long id);
 
     void updateStatus(Long noteCastId, NoteCastStatus status);
 

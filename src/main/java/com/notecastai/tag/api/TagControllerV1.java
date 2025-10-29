@@ -5,11 +5,9 @@ import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.tag.service.TagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 
@@ -22,25 +20,23 @@ public class TagControllerV1 {
     private final TagService tagService;
 
     @PostMapping
-    public ResponseEntity<TagDTO> create(@Valid @RequestBody TagCreateRequest request) {
-        TagDTO created = tagService.create(request);
-        return ResponseEntity.created(URI.create("/api/tags/" + created.getId())).body(created);
+    public TagDTO create(@Valid @RequestBody TagCreateRequest request) {
+        return tagService.create(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<TagDTO>> list(@RequestParam("userId") Long userId) {
-        return ResponseEntity.ok(tagService.findAllByUser(userId));
+    public List<TagDTO> list(@RequestParam("userId") Long userId) {
+        return tagService.findAllByUser(userId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TagDTO> get(@PathVariable Long id, @RequestParam("userId") Long userId) {
-        return ResponseEntity.ok(tagService.getForUser(id, userId));
+    public TagDTO get(@PathVariable Long id, @RequestParam("userId") Long userId) {
+        return tagService.getForUser(id, userId);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deactivate(@PathVariable Long id, @RequestParam("userId") Long userId) {
-        tagService.deactivateForUser(id, userId);
-        return ResponseEntity.noContent().build();
+    public void delete(@PathVariable Long id, @RequestParam("userId") Long userId) {
+        tagService.deleteForUser(id, userId);
     }
 
 }

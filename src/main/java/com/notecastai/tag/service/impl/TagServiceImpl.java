@@ -62,10 +62,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void deactivateForUser(Long id, Long userId) {
+    public void deleteForUser(Long id, Long userId) {
         TagEntity entity = tagRepository.findByIdAndUserOrThrow(id, userId);
-        entity.deactivate();
-        tagRepository.save(entity);
+        tagRepository.delete(entity);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class NoteCastControllerV1 {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        noteCastService.deactivate(id);
+        noteCastService.delete(id);
     }
 
 }

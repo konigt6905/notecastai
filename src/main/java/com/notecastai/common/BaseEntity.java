@@ -57,14 +57,4 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "updated_by")
     private Long updatedBy;
 
-    private boolean inactive = false;
-
-    public void deactivate() {
-        this.inactive = true;
-
-    }
-
-    public void activate() {
-        this.inactive = false;
-    }
 }

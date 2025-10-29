@@ -28,7 +28,7 @@ public class S3StorageService implements StorageService {
     private final S3Client s3;
     private final S3Presigner presigner;
 
-    @Value("${app.s3.bucket}")
+    @Value("${aws.s3.bucket}")
     String bucket;
 
     @Override

@@ -26,35 +26,51 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // --- Spring Boot: web, validation, actuator ---
+    implementation "org.springframework.boot:spring-boot-starter-web"          // REST API, Jackson, Tomcat
+    implementation "org.springframework.boot:spring-boot-starter-validation"   // @Valid, Bean Validation
+    implementation "org.springframework.boot:spring-boot-starter-actuator"     // /actuator health/metrics
+
+    // --- Security / Auth (Clerk JWT via resource server) ---
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+
+    // --- Persistence / DB ---
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"     // JPA + Hibernate
+    runtimeOnly    "org.postgresql:postgresql"                                  // JDBC driver
+
+    // --- Migrations ---
+    implementation "org.flywaydb:flyway-core"
+    implementation "org.flywaydb:flyway-database-postgresql"
+
+    // --- Mapping (DTO <-> entity) ---
+    implementation       "org.mapstruct:mapstruct:1.6.3"
+    annotationProcessor  "org.mapstruct:mapstruct-processor:1.6.3"
+    annotationProcessor  "org.projectlombok:lombok-mapstruct-binding:0.2.0"     // Lombok + MapStruct
+
+    // --- Resilience / Rate limiting ---
+    implementation "io.github.resilience4j:resilience4j-retry:2.2.0"
     implementation "io.github.resilience4j:resilience4j-spring-boot3:2.2.0"
-    implementation "org.mapstruct:mapstruct:1.6.3"
-    annotationProcessor "org.mapstruct:mapstruct-processor:1.6.3"
 
-    implementation(platform("software.amazon.awssdk:bom:2.25.66"))
-    implementation 'io.github.resilience4j:resilience4j-retry:2.1.0'
-    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.1.0'
-    implementation("software.amazon.awssdk:sts")
-    implementation("software.amazon.awssdk:s3")
+    // --- AWS SDK (BOM + services) ---
+    implementation platform("software.amazon.awssdk:bom:2.25.66")
+    implementation "software.amazon.awssdk:sts"
+    implementation "software.amazon.awssdk:s3"
 
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("org.postgresql:postgresql")
+    // --- AWS Parameter Store (Spring Cloud AWS) ---
+    implementation "io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.4.4"
 
-    implementation 'io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.4.4'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // --- Build-time helpers ---
+    compileOnly        "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    // --- Testing ---
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testRuntimeOnly    "org.junit.platform:junit-platform-launcher"
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()

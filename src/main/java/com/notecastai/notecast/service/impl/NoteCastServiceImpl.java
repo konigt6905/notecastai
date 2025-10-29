@@ -102,10 +102,9 @@ public class NoteCastServiceImpl implements NoteCastService {
 
     @Override
     @Transactional
-    public void deactivate(Long id) {
+    public void delete(Long id) {
         NoteCastEntity entity = noteCastRepository.getOrThrow(id);
-        entity.deactivate();
-        noteCastRepository.save(entity);
+        noteCastRepository.delete(entity);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

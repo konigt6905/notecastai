@@ -14,6 +14,7 @@ import com.notecastai.note.service.NoteService;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.tag.repo.TagRepository;
+import com.notecastai.user.api.mapper.UserMapper;
 import com.notecastai.user.domain.UserEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class NoteServiceImpl implements NoteService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final NoteMapper mapper;
+    private final UserMapper userMapper;
     private final NoteAiEditor noteAiEditor;
     private final NoteAiChat noteAiChat;
 
@@ -183,7 +185,7 @@ public class NoteServiceImpl implements NoteService {
                 .title(entity.getTitle())
                 .tags(entity.getTags().stream()
                         .map(tag -> TagDTO.builder()
-                                .id(tag.getId())
+                                .user(userMapper.toDto(tag.getUser()))
                                 .name(tag.getName())
                                 .build())
                         .toList())

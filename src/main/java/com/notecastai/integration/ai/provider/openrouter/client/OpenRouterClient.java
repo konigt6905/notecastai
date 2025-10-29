@@ -1,7 +1,6 @@
 package com.notecastai.integration.ai.provider.openrouter.client;
 
 import com.notecastai.common.exeption.TechnicalException;
-import com.notecastai.integration.ai.openrouter.dto.*;
 import com.notecastai.integration.ai.provider.openrouter.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

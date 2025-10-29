@@ -4,10 +4,7 @@ import com.notecastai.common.BaseEntity;
 import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -39,7 +36,7 @@ public class NoteCastEntity extends BaseEntity {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "transcript")
+    @Column(name = "transcript", columnDefinition = "TEXT")
     private String transcript;
 
     @Column(name = "duration_seconds")
@@ -49,6 +46,7 @@ public class NoteCastEntity extends BaseEntity {
     private Long processingTime;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @Column(name = "language", length = 10)
     private TranscriptionLanguage language = TranscriptionLanguage.ENGLISH;
 
@@ -60,7 +58,8 @@ public class NoteCastEntity extends BaseEntity {
     @Column(name = "style", nullable = false, length = 30)
     private NoteCastStyle style;
 
-    @Column(name = "error_message", length = 1000)
+    @Lob
+    @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
 }

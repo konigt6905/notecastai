@@ -1,11 +1,12 @@
 package com.notecastai.note.api.dto;
 
 import com.notecastai.tag.api.dto.TagDTO;
+import com.notecastai.user.api.dto.UserDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class NoteDTO {
     @NotNull
     private Long id;
     @NotNull
-    private Long userId;
+    private UserDTO user;
     @NotNull
     private String title;
     @NotNull
@@ -25,9 +26,9 @@ public class NoteDTO {
     @NotNull
     private List<TagDTO> tags;
     @NotNull
-    private LocalDateTime createdDate;
+    private Instant createdDate;
     @NotNull
-    private LocalDateTime updatedDate;
+    private Instant updatedDate;
     private List<AiActionDto> proposedAiActions;
     @NotNull
     private Boolean inactive;
