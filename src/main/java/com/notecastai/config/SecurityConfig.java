@@ -43,7 +43,17 @@ public class SecurityConfig {
     SecurityFilterChain security(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/health", "/actuator/health").permitAll()
+                // Health checks
+                .requestMatchers("/health", "/actuator/**").permitAll()
+                // Swagger / OpenAPI endpoints
+                .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**"
+                ).permitAll()
+                // All other endpoints require authentication
                 .anyRequest().authenticated()
         );
         http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));
@@ -61,4 +71,3 @@ public class SecurityConfig {
         return decoder;
     }
 }
-

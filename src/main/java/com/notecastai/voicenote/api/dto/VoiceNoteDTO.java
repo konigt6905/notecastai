@@ -32,7 +32,6 @@ public class VoiceNoteDTO {
     private String transcript;
     private String language;
     private Integer durationSeconds;
-    private String errorMessage;
     @NotNull
     private Instant createdDate;
     @NotNull

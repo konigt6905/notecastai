@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.7'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.notecastai'
@@ -9,20 +9,20 @@ version = '0.0.1-SNAPSHOT'
 description = 'Notecastai Backend'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -61,6 +61,9 @@ dependencies {
     // --- AWS Parameter Store (Spring Cloud AWS) ---
     implementation "io.awspring.cloud:spring-cloud-starter-aws-parameter-store-config:2.4.4"
 
+    // --- OpenAPI / Swagger Documentation ---
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
     // --- Build-time helpers ---
     compileOnly        "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
@@ -73,5 +76,5 @@ dependencies {
 
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
