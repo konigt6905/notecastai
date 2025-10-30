@@ -130,7 +130,7 @@ public class NoteControllerV1 {
             @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid format request", content = @Content)
     })
-    @PutMapping("/{id}/knowledge/formate")
+    @PutMapping("/{id}/knowledge/format")
     public NoteDTO formateNoteKnowledgeBase(
             @Parameter(description = "Note ID", required = true)
             @PathVariable Long id,
