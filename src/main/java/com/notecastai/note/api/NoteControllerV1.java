@@ -43,6 +43,21 @@ public class NoteControllerV1 {
     }
 
     @Operation(
+            summary = "Combine notes",
+            description = "Create a new COMBINED type note by merging knowledge bases from multiple notes (max 30)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Combined note created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data or note limit exceeded", content = @Content),
+            @ApiResponse(responseCode = "404", description = "One or more notes not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PostMapping("/combine")
+    public NoteDTO combine(@Valid @RequestBody NoteCombineRequest request) {
+        return noteService.combine(request);
+    }
+
+    @Operation(
             summary = "Update note knowledge (manual)",
             description = "Manually update the knowledge base content of a note"
     )

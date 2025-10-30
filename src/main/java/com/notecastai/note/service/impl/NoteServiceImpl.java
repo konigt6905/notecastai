@@ -61,7 +61,8 @@ public class NoteServiceImpl implements NoteService {
                 .title(aiResponse.getAdjustedTitle())
                 .knowledgeBase(request.getKnowledgeBase())
                 .formattedNote(aiResponse.getFormattedNote())
-                .currentFormate(request.getFormateType() == null ? FormateType.DEFAULT : request.getFormateType())
+                .currentFormate(request.getFormateType())
+                .type(request.getType())
                 .tags(aiResponse.getTagIds().stream()
                         .map(tagRepository::getById)
                         .collect(Collectors.toSet()))
@@ -175,6 +176,41 @@ public class NoteServiceImpl implements NoteService {
             result.add(tag);
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public NoteDTO combine(NoteCombineRequest request) {
+        List<NoteEntity> notes = request.getNoteIds().stream()
+                .distinct()
+                .map(noteRepository::getOrThrow)
+                .toList();
+
+        // Combine knowledge bases from all notes
+        String combinedKnowledgeBase = notes.stream()
+                .map(note -> {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("### ").append(note.getTitle()).append("\n\n");
+                    sb.append(note.getKnowledgeBase()).append("\n\n");
+                    sb.append("---\n\n");
+                    return sb.toString();
+                })
+                .collect(Collectors.joining());
+
+        // Create a new note request with combined knowledge base
+        NoteCreateRequest createRequest = NoteCreateRequest.builder()
+                .title(request.getTitle())
+                .knowledgeBase(combinedKnowledgeBase)
+                .tagIds(request.getTagIds())
+                .type(com.notecastai.note.domain.NoteType.COMBINED)
+                .formateType(request.getFormateType())
+                .autoAiFormate(request.isAutoAiFormate())
+                .instructions(request.getInstructions())
+                .build();
+
+        log.info("Creating combined note from {} notes", notes.size());
+
+        return create(createRequest);
     }
 
     @Override

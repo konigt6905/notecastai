@@ -2,6 +2,7 @@ package com.notecastai.tag.api;
 
 import com.notecastai.tag.api.dto.TagCreateRequest;
 import com.notecastai.tag.api.dto.TagDTO;
+import com.notecastai.tag.api.dto.TagUpdateRequest;
 import com.notecastai.tag.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +38,25 @@ public class TagControllerV1 {
     @PostMapping
     public TagDTO create(@Valid @RequestBody TagCreateRequest request) {
         return tagService.create(request);
+    }
+
+    @Operation(
+            summary = "Update tag",
+            description = "Update an existing tag (rename)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data or tag name already exists", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PutMapping("/{id}")
+    public TagDTO update(
+            @Parameter(description = "Tag ID to update", required = true)
+            @PathVariable Long id,
+            @Valid @RequestBody TagUpdateRequest request
+    ) {
+        return tagService.update(id, request);
     }
 
     @Operation(

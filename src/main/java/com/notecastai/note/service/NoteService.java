@@ -27,4 +27,6 @@ public interface NoteService {
     NoteDTO addTag(Long noteId, Long tagId);
 
     NoteDTO removeTag(Long noteId, Long tagId);
+
+    NoteDTO combine(NoteCombineRequest request);
 }

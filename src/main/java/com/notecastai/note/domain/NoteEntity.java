@@ -47,8 +47,9 @@ public class NoteEntity extends BaseEntity {
     private String formattedNote;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @Column(name = "current_formate", nullable = false, length = 40)
-    private FormateType currentFormate;
+    private FormateType currentFormate = FormateType.DEFAULT;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
