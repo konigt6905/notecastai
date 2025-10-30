@@ -50,6 +50,11 @@ public class NoteEntity extends BaseEntity {
     @Column(name = "current_formate", nullable = false, length = 40)
     private FormateType currentFormate;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(name = "type", nullable = false, length = 40)
+    private NoteType type = NoteType.STANDARD;
+
     /** Normalized tags (Many-to-Many via join table). */
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)

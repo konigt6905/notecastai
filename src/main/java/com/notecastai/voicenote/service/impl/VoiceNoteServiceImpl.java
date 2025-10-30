@@ -6,6 +6,7 @@ import com.notecastai.integration.ai.TranscriptionService;
 import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
 import com.notecastai.note.api.dto.NoteCreateRequest;
 import com.notecastai.note.api.dto.NoteDTO;
+import com.notecastai.note.domain.NoteType;
 import com.notecastai.note.service.NoteService;
 import com.notecastai.user.domain.UserEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
@@ -76,6 +77,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
         NoteDTO note = noteService.create(NoteCreateRequest.builder()
                 .title(request.getTitle())
                 .tagIds(request.getTagIds())
+                .type(NoteType.VOICENOTE)
                 .knowledgeBase(entity.getTranscript())
                 .formateType(request.getFormateType())
                 .instructions(request.getUserInstructions())

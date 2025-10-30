@@ -1,5 +1,7 @@
 package com.notecastai.note.api.dto;
 
+import com.notecastai.note.domain.FormateType;
+import com.notecastai.note.domain.NoteType;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +16,10 @@ public class NotesQueryParam {
     private List<Long> tagIds;
 
     private String titleLike;
+
+    private NoteType type;
+
+    private FormateType currentFormate;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant from;

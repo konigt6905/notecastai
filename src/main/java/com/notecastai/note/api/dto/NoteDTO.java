@@ -1,5 +1,7 @@
 package com.notecastai.note.api.dto;
 
+import com.notecastai.note.domain.FormateType;
+import com.notecastai.note.domain.NoteType;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.user.api.dto.UserDTO;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +25,10 @@ public class NoteDTO {
     private String knowledgeBase;
     @NotNull
     private String formattedNote;
+    @NotNull
+    private NoteType type;
+    @NotNull
+    private FormateType currentFormate;
     @NotNull
     private List<TagDTO> tags;
     @NotNull

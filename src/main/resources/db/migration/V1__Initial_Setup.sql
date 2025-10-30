@@ -69,6 +69,7 @@ CREATE TABLE notecastai.note (
                                  knowledge_base TEXT,
                                  formatted_note TEXT,
                                  current_formate VARCHAR(40) NOT NULL,
+                                 type VARCHAR(40) NOT NULL,
 
     -- BaseEntity audit fields
                                  created_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),

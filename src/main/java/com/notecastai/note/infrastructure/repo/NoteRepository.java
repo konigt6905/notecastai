@@ -45,6 +45,8 @@ public class NoteRepository extends BaseRepository<NoteEntity, Long, NoteDao> {
                         .equal("user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
                         .likeIgnoreCase("title", params.getTitleLike())
                         .joinIn("tags", "id", params.getTagIds())
+                        .equal("type", params.getType())
+                        .equal("currentFormate", params.getCurrentFormate())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
                 )
