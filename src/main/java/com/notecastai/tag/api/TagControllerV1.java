@@ -32,8 +32,7 @@ public class TagControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
     })
     @PostMapping
     public TagDTO create(@Valid @RequestBody TagCreateRequest request) {
@@ -47,8 +46,7 @@ public class TagControllerV1 {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data or tag name already exists", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content)
     })
     @PutMapping("/{id}")
     public TagDTO update(
@@ -64,8 +62,7 @@ public class TagControllerV1 {
             description = "Get all tags belonging to a specific user"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tags retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Tags retrieved successfully")
     })
     @GetMapping
     public List<TagDTO> list(
@@ -81,8 +78,7 @@ public class TagControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag found"),
-            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content)
     })
     @GetMapping("/{id}")
     public TagDTO get(
@@ -100,8 +96,7 @@ public class TagControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Tag not found", content = @Content)
     })
     @DeleteMapping("/{id}")
     public void delete(

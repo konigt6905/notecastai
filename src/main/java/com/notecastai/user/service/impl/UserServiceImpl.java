@@ -4,6 +4,7 @@ import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.tag.service.TagService;
 import com.notecastai.user.api.dto.UserCreateRequest;
 import com.notecastai.user.api.dto.UserDTO;
+import com.notecastai.user.api.dto.UserUpdateRequest;
 import com.notecastai.user.api.mapper.UserMapper;
 import com.notecastai.user.domain.UserEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
@@ -47,6 +48,26 @@ public class UserServiceImpl implements UserService {
         tagService.createDefaultTagsForUser(saved.getId());
 
         return mapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public UserDTO update(Long id, UserUpdateRequest request) {
+        UserEntity entity = userRepository.getOrThrow(id);
+
+        if (request.getDefaultFormate() != null) {
+            entity.setDefaultFormate(request.getDefaultFormate());
+        }
+
+        if (request.getPreferredVoice() != null) {
+            entity.setPreferredVoice(request.getPreferredVoice());
+        }
+
+        if (request.getPreferredLanguage() != null) {
+            entity.setPreferredLanguage(request.getPreferredLanguage());
+        }
+
+        return mapper.toDto(userRepository.save(entity));
     }
 
     @Override

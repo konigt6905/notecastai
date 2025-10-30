@@ -17,6 +17,8 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 CREATE TABLE notecastai."user" (
                                    id BIGSERIAL PRIMARY KEY,
                                    clerk_user_id VARCHAR(255) NOT NULL,
+                                   preferred_voice VARCHAR(40) NOT NULL,
+                                   default_formate VARCHAR(40) NOT NULL,
                                    preferred_language VARCHAR(10) DEFAULT 'AUTO',
 
     -- BaseEntity audit fields

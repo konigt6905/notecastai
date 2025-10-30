@@ -2,6 +2,7 @@ package com.notecastai.user.api;
 
 import com.notecastai.user.api.dto.UserCreateRequest;
 import com.notecastai.user.api.dto.UserDTO;
+import com.notecastai.user.api.dto.UserUpdateRequest;
 import com.notecastai.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,12 +33,29 @@ public class UserControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
     })
     @PostMapping
     public UserDTO create(@Valid @RequestBody UserCreateRequest request) {
         return userService.create(request);
+    }
+
+    @Operation(
+            summary = "Update user preferences",
+            description = "Update user's default format, preferred voice, and preferred language settings"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
+    })
+    @PutMapping("/{id}")
+    public UserDTO update(
+            @Parameter(description = "User ID to update", required = true)
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateRequest request
+    ) {
+        return userService.update(id, request);
     }
 
     @Operation(
@@ -47,7 +65,6 @@ public class UserControllerV1 {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
     })
     @GetMapping("/{id}")
     public UserDTO get(
@@ -62,8 +79,7 @@ public class UserControllerV1 {
             description = "Get paginated list of all users in the system"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully")
     })
     @GetMapping
     public Page<UserDTO> list(
@@ -79,8 +95,7 @@ public class UserControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
     })
     @GetMapping("/by-clerk/{clerkUserId}")
     public UserDTO getByClerk(
@@ -96,8 +111,7 @@ public class UserControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
     })
     @DeleteMapping("/{id}")
     public void delete(

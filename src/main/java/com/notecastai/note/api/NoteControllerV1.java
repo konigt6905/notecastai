@@ -34,8 +34,7 @@ public class NoteControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Note created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
     })
     @PostMapping
     public NoteDTO create(@Valid @RequestBody NoteCreateRequest request) {
@@ -49,8 +48,7 @@ public class NoteControllerV1 {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Combined note created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data or note limit exceeded", content = @Content),
-            @ApiResponse(responseCode = "404", description = "One or more notes not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "One or more notes not found", content = @Content)
     })
     @PostMapping("/combine")
     public NoteDTO combine(@Valid @RequestBody NoteCombineRequest request) {
@@ -64,8 +62,7 @@ public class NoteControllerV1 {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Note updated successfully"),
             @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
     })
     @PutMapping("/{id}/knowledge/manual")
     public NoteDTO update(
@@ -81,8 +78,7 @@ public class NoteControllerV1 {
             description = "Get paginated list of notes with optional filtering"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Notes retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Notes retrieved successfully")
     })
     @GetMapping
     public Page<NoteDTO> findAll(
@@ -98,8 +94,7 @@ public class NoteControllerV1 {
             description = "Get paginated list of notes with minimal details for list views"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Notes retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Notes retrieved successfully")
     })
     @GetMapping("/short")
     public Page<NoteShortDTO> findAllShort(
@@ -116,8 +111,7 @@ public class NoteControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Note found"),
-            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content)
     })
     @GetMapping("/{id}")
     public NoteDTO getById(
@@ -134,8 +128,7 @@ public class NoteControllerV1 {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Note formatted successfully"),
             @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid format request", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid format request", content = @Content)
     })
     @PutMapping("/{id}/knowledge/formate")
     public NoteDTO formateNoteKnowledgeBase(
@@ -153,8 +146,7 @@ public class NoteControllerV1 {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Question answered successfully"),
             @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid question", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid question", content = @Content)
     })
     @PostMapping("/{noteId}/ask")
     public NoteQuestionResponse askQuestion(
@@ -170,8 +162,7 @@ public class NoteControllerV1 {
             description = "Get all available note formatting types"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Formats retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Formats retrieved successfully")
     })
     @GetMapping("/formats")
     public List<NoteFormatTypeDTO> listFormats() {
@@ -184,8 +175,7 @@ public class NoteControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag added successfully"),
-            @ApiResponse(responseCode = "404", description = "Note or tag not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Note or tag not found", content = @Content)
     })
     @PutMapping("/{noteId}/tags/{tagId}")
     public NoteDTO addTag(
@@ -203,8 +193,7 @@ public class NoteControllerV1 {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag removed successfully"),
-            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content)
     })
     @DeleteMapping("/{noteId}/tags/{tagId}")
     public NoteDTO removeTag(
