@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springdoc.core.models.GroupedOpenApi;   // springdoc 2.x
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +36,7 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
-                .servers(List.of(
-                        new Server().url(serverUrl).description("Application Server")))
+                .servers(List.of(new Server().url(serverUrl).description("Application Server")))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
@@ -46,5 +46,21 @@ public class OpenApiConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
                                         .description("Enter JWT Bearer token from Clerk authentication")));
+    }
+
+    @Bean
+    public GroupedOpenApi apiGroup() {
+        return GroupedOpenApi.builder()
+                .group("API")
+                .pathsToExclude("/actuator/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi actuatorGroup() {
+        return GroupedOpenApi.builder()
+                .group("Actuator")
+                .pathsToMatch("/actuator/**")
+                .build();
     }
 }

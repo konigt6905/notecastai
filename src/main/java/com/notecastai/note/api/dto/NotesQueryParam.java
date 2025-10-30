@@ -13,6 +13,8 @@ public class NotesQueryParam {
 
     private List<Long> tagIds;
 
+    private String titleLike;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant from;
 

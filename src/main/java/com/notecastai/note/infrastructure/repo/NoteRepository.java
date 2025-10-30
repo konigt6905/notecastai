@@ -43,7 +43,8 @@ public class NoteRepository extends BaseRepository<NoteEntity, Long, NoteDao> {
         return CriteriaQueryBuilder.forEntity(NoteEntity.class, entityManager)
                 .where(b -> b
                         .equal("user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
-                        .joinIn("tags", "id", params.getTagIds())  // Changed from joinEqual to joinIn
+                        .likeIgnoreCase("title", params.getTitleLike())
+                        .joinIn("tags", "id", params.getTagIds())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
                 )

@@ -188,5 +188,24 @@ public class CriteriaQueryBuilder<T extends Serializable> {
             }
             return path;
         }
+
+        public PredicateBuilder<T> likeIgnoreCase(String dotPath, String value) {
+            if (value == null || value.isBlank()) return this;
+
+            predicates.add(ctx -> {
+                Expression<String> path = ctx.cb.lower(resolve(ctx.root, dotPath).as(String.class));
+                String pattern = "%" + escapeLike(value.toLowerCase(Locale.ROOT).trim()) + "%";
+                return ctx.cb.like(path, pattern, '\\');
+            });
+
+            return this;
+        }
+
+        private static String escapeLike(String s) {
+            return s
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_");
+        }
     }
 }
