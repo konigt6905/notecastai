@@ -23,4 +23,8 @@ public interface NoteService {
     NoteDTO getById(Long id);
 
     Page<NoteShortDTO> findAllShort(NotesQueryParam params, Pageable pageable);
+
+    NoteDTO addTag(Long noteId, Long tagId);
+
+    NoteDTO removeTag(Long noteId, Long tagId);
 }

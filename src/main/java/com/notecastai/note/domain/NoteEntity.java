@@ -7,8 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Entity
@@ -63,7 +62,7 @@ public class NoteEntity extends BaseEntity {
                     @Index(name = "idx_notetag_tag",  columnList = "tag_id")
             }
     )
-    private List<TagEntity> tags = new ArrayList<>();
+    private Set<TagEntity> tags = new HashSet<>();
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.LAZY)

@@ -64,7 +64,7 @@ public class NoteServiceImpl implements NoteService {
                 .currentFormate(request.getFormateType() == null ? FormateType.DEFAULT : request.getFormateType())
                 .tags(aiResponse.getTagIds().stream()
                         .map(tagRepository::getById)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .proposedAiActions(aiActions)
                 .build();
 
@@ -89,7 +89,7 @@ public class NoteServiceImpl implements NoteService {
         }
 
         if (request.getTagIds() != null) {
-            List<TagEntity> tags = resolveAndValidateTags(request.getUserId(), request.getTagIds());
+            Set<TagEntity> tags = resolveAndValidateTags(request.getUserId(), request.getTagIds());
             entity.setTags(tags);
         }
 
@@ -121,9 +121,9 @@ public class NoteServiceImpl implements NoteService {
 
         // Update tags if any valid ones found
         if (!aiResponse.getTagIds().isEmpty()) {
-            List<TagEntity> tags = aiResponse.getTagIds().stream()
+            Set<TagEntity> tags = aiResponse.getTagIds().stream()
                     .map(tagRepository::getById)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
             entity.setTags(tags);
         }
 
@@ -166,17 +166,42 @@ public class NoteServiceImpl implements NoteService {
                 .collect(Collectors.toList());
     }
 
-    private List<TagEntity> resolveAndValidateTags(Long userId, List<Long> tagIds) {
-        if (tagIds == null || tagIds.isEmpty()) return List.of();
-        List<TagEntity> result = new ArrayList<>();
-        Set<Long> seen = new HashSet<>();
+    private Set<TagEntity> resolveAndValidateTags(Long userId, List<Long> tagIds) {
+        if (tagIds == null || tagIds.isEmpty()) return Set.of();
+        Set<TagEntity> result = new HashSet<>();
         for (Long tagId : tagIds) {
-            if (tagId == null || seen.contains(tagId)) continue;
+            if (tagId == null) continue;
             TagEntity tag = tagRepository.findByIdAndUserOrThrow(tagId, userId);
             result.add(tag);
-            seen.add(tagId);
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public NoteDTO addTag(Long noteId, Long tagId) {
+        NoteEntity note = noteRepository.getOrThrow(noteId);
+        TagEntity tag = tagRepository.getById(tagId);
+
+        note.getTags().add(tag);
+
+        NoteEntity savedNote = noteRepository.save(note);
+        log.info("Tag {} added to note {}", tagId, noteId);
+
+        return mapper.toDto(savedNote);
+    }
+
+    @Override
+    @Transactional
+    public NoteDTO removeTag(Long noteId, Long tagId) {
+        NoteEntity note = noteRepository.getOrThrow(noteId);
+
+        note.getTags().removeIf(tag -> tag.getId().equals(tagId));
+
+        NoteEntity savedNote = noteRepository.save(note);
+        log.info("Tag {} removed from note {}", tagId, noteId);
+
+        return mapper.toDto(savedNote);
     }
 
     private NoteShortDTO toNoteShortDTO(NoteEntity entity) {

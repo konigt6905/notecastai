@@ -162,4 +162,42 @@ public class NoteControllerV1 {
     public List<NoteFormatTypeDTO> listFormats() {
         return noteService.listFormats();
     }
+
+    @Operation(
+            summary = "Add tag to note",
+            description = "Associate a tag with a specific note"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag added successfully"),
+            @ApiResponse(responseCode = "404", description = "Note or tag not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PutMapping("/{noteId}/tags/{tagId}")
+    public NoteDTO addTag(
+            @Parameter(description = "Note ID", required = true)
+            @PathVariable Long noteId,
+            @Parameter(description = "Tag ID to add", required = true)
+            @PathVariable Long tagId
+    ) {
+        return noteService.addTag(noteId, tagId);
+    }
+
+    @Operation(
+            summary = "Remove tag from note",
+            description = "Remove a tag association from a specific note"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag removed successfully"),
+            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @DeleteMapping("/{noteId}/tags/{tagId}")
+    public NoteDTO removeTag(
+            @Parameter(description = "Note ID", required = true)
+            @PathVariable Long noteId,
+            @Parameter(description = "Tag ID to remove", required = true)
+            @PathVariable Long tagId
+    ) {
+        return noteService.removeTag(noteId, tagId);
+    }
 }
