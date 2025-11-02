@@ -1,28 +1,34 @@
 package com.notecastai.common.util;
 
 import com.notecastai.common.exeption.BusinessException;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import static com.notecastai.common.exeption.BusinessException.BusinessCode.CLERK_USER_ID_MISSING;
 
+@Slf4j
 public final class SecurityUtils {
-    private SecurityUtils() {}
+    private SecurityUtils() {
+    }
 
-    /** Returns Clerk user id (JWT sub) or null. */
     public static String getCurrentClerkUserId() {
-        Authentication a = SecurityContextHolder.getContext().getAuthentication();
-        if (a instanceof JwtAuthenticationToken t) {
-            return t.getToken().getSubject(); // Clerk "sub", e.g. user_abc123
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication instanceof JwtAuthenticationToken token) {
+            return token.getToken().getSubject();
         }
         return null;
     }
 
     public static String getCurrentClerkUserIdOrThrow() {
-        String id = getCurrentClerkUserId();
-        if (id == null) throw BusinessException.of(CLERK_USER_ID_MISSING);
-        return id;
+        String clerkUserId = getCurrentClerkUserId();
+
+        if (clerkUserId == null) {
+            throw BusinessException.of(CLERK_USER_ID_MISSING);
+        }
+
+        return clerkUserId;
     }
 
 }

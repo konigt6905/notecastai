@@ -19,7 +19,7 @@ import java.time.Instant;
 @SuperBuilder
 @MappedSuperclass
 @Getter
-@Setter(AccessLevel.PROTECTED)
+@Setter
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

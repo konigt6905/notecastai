@@ -17,8 +17,16 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 CREATE TABLE notecastai."user" (
                                    id BIGSERIAL PRIMARY KEY,
                                    clerk_user_id VARCHAR(255) NOT NULL,
-                                   preferred_voice VARCHAR(40) NOT NULL,
-                                   default_formate VARCHAR(40) NOT NULL,
+    -- User profile info from JWT
+                                   email VARCHAR(255),
+                                   email_verified BOOLEAN DEFAULT FALSE,
+                                   full_name VARCHAR(255),
+                                   given_name VARCHAR(100),
+                                   family_name VARCHAR(100),
+                                   picture_url TEXT,
+    -- User preferences
+                                   preferred_voice VARCHAR(40) NOT NULL DEFAULT 'DEFAULT',
+                                   default_formate VARCHAR(40) NOT NULL DEFAULT 'DEFAULT',
                                    preferred_language VARCHAR(10) DEFAULT 'AUTO',
 
     -- BaseEntity audit fields
@@ -33,6 +41,7 @@ CREATE TABLE notecastai."user" (
 );
 
 CREATE UNIQUE INDEX idx_user_clerk ON notecastai."user"(clerk_user_id);
+CREATE INDEX idx_user_email ON notecastai."user"(email);
 CREATE INDEX idx_user_created_date ON notecastai."user"(created_date DESC);
 CREATE INDEX idx_user_inactive ON notecastai."user"(inactive) WHERE inactive = FALSE;
 

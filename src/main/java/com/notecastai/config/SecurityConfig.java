@@ -1,27 +1,31 @@
 package com.notecastai.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
 @Configuration
+@Slf4j
 public class SecurityConfig {
 
     @Value("${clerk.issuer}")
     private String issuer;
     @Value("${clerk.jwks}")
     private String jwks;
-    @Value("${clerk.audience}")
+    @Value("${clerk.audience:}")
     private String audience;
 
     @Bean
@@ -41,7 +45,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain security(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth
                 // Health checks
                 .requestMatchers("/health", "/actuator/**").permitAll()

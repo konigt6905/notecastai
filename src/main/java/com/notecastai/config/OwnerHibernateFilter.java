@@ -11,6 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,10 +38,15 @@ public class OwnerHibernateFilter extends OncePerRequestFilter {
         Optional<UserDTO> currentUser = Optional.ofNullable(clerkUserId)
                 .flatMap(userService::findByClerkUserId);
 
-        // Auto-provision user is new in the system
+        // Auto-provision user if new in the system
         if (clerkUserId != null && currentUser.isEmpty()) {
-            UserDTO created = userService.ensureUserExists(clerkUserId);
-            currentUser = Optional.of(created);
+            // Extract JWT claims for user creation
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+                Jwt jwt = jwtAuth.getToken();
+                UserDTO created = userService.ensureUserExists(clerkUserId, jwt);
+                currentUser = Optional.of(created);
+            }
         }
 
         Session session = em.unwrap(Session.class);
@@ -51,5 +60,4 @@ public class OwnerHibernateFilter extends OncePerRequestFilter {
             session.disableFilter("ownerFilter");
         }
     }
-
 }

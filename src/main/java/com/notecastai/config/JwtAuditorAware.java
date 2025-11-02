@@ -1,22 +1,36 @@
 package com.notecastai.config;
 
 import com.notecastai.common.util.SecurityUtils;
-import com.notecastai.user.domain.UserEntity;
-import com.notecastai.user.infrastructure.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuditorAware implements AuditorAware<Long> {
 
-    private final UserRepository userRepository;
+    /**
+     * SYSTEM user ID used for:
+     * - Auto-provisioning new users from Clerk
+     * - System-initiated operations
+     */
+    public static final Long SYSTEM_USER_ID = -1L;
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-        String clerkUserId = SecurityUtils.getCurrentClerkUserIdOrThrow();
-        UserEntity user = userRepository.getByClerkUserId(clerkUserId);
-        return Optional.of(user.getId());
+        // For authenticated users, we use SYSTEM_USER_ID for auditing
+        // The actual user tracking is done via the Clerk user ID (clerkUserId field)
+        // This avoids database queries during entity persistence which could cause infinite recursion
+        String clerkUserId = SecurityUtils.getCurrentClerkUserId();
+
+        if (clerkUserId != null) {
+            // User is authenticated - use SYSTEM for auditing
+            return Optional.of(SYSTEM_USER_ID);
+        }
+
+        // No authenticated user
+        return Optional.empty();
     }
 }

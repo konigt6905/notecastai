@@ -5,6 +5,7 @@ import com.notecastai.user.api.dto.UserDTO;
 import com.notecastai.user.api.dto.UserUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Optional;
 
@@ -25,5 +26,7 @@ public interface UserService {
     void delete(Long id);
 
     UserDTO ensureUserExists(String clerkUserId);
+
+    UserDTO ensureUserExists(String clerkUserId, Jwt jwt);
 
 }
