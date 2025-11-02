@@ -36,12 +36,10 @@ public class NoteEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "knowledge_base", columnDefinition = "TEXT")
     private String knowledgeBase;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "formatted_note", columnDefinition = "TEXT")
     private String formattedNote;
@@ -91,7 +89,6 @@ public class NoteEntity extends BaseEntity {
         @Column(name = "name", nullable = false, length = 200)
         private String name;
 
-        @Lob
         @Column(name = "prompt", columnDefinition = "TEXT", nullable = false)
         private String prompt;
     }

@@ -34,7 +34,6 @@ public class NoteCastEntity extends BaseEntity {
     @Column(name = "s3_file_url")
     private String s3FileUrl;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "transcript", columnDefinition = "TEXT")
     private String transcript;
@@ -58,7 +57,6 @@ public class NoteCastEntity extends BaseEntity {
     @Column(name = "style", nullable = false, length = 30)
     private NoteCastStyle style;
 
-    @Lob
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 

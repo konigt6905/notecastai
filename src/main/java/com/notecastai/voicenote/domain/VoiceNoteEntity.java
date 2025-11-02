@@ -57,16 +57,13 @@ public class VoiceNoteEntity extends BaseEntity {
     @Column(name = "status", nullable = false, length = 20)
     private VoiceNoteStatus status;
 
-    @Lob
     @Column(name = "transcript", columnDefinition = "TEXT")
     private String transcript;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "word_timestamps_json", columnDefinition = "TEXT")
     private String wordTimestampsJson;
 
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "segment_timestamps_json", columnDefinition = "TEXT")
     private String segmentTimestampsJson;
@@ -82,7 +79,6 @@ public class VoiceNoteEntity extends BaseEntity {
     @Column(name = "transcript_processing_time_ms")
     private Long transcriptProcessingTimeMs;
 
-    @Lob
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
