@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
-public class FormatNotePromptBuilder {
+public class FormatNoteKnowledgeBasePromptBuilder {
 
     private String currentTitle;
     private String currentKnowledgeBase;

@@ -4,7 +4,7 @@ import com.notecastai.common.util.FileValidationUtil;
 import com.notecastai.common.util.SecurityUtils;
 import com.notecastai.integration.ai.TranscriptionService;
 import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
-import com.notecastai.note.api.dto.NoteCreateRequest;
+import com.notecastai.note.api.dto.CreateNoteRequest;
 import com.notecastai.note.api.dto.NoteDTO;
 import com.notecastai.note.domain.NoteType;
 import com.notecastai.note.service.NoteService;
@@ -74,7 +74,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
 
         //re-attach
         entity = voiceNoteRepository.getOrThrow(entity.getId());
-        NoteDTO note = noteService.create(NoteCreateRequest.builder()
+        NoteDTO note = noteService.create(CreateNoteRequest.builder()
                 .title(request.getTitle())
                 .tagIds(request.getTagIds())
                 .type(NoteType.VOICENOTE)

@@ -42,11 +42,11 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public NoteDTO create(NoteCreateRequest request) {
+    public NoteDTO create(CreateNoteRequest request) {
         UserEntity user = userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow());
 
         // Call AI with retry logic
-        NewNoteAiResponse aiResponse = noteAiEditor.adjustNewNote(request);
+        NewNoteAiResponse aiResponse = noteAiEditor.adjustNote(request);
 
         // Map AI actions
         List<NoteEntity.AiAction> aiActions = aiResponse.getProposedAiActions().stream()
@@ -58,12 +58,10 @@ public class NoteServiceImpl implements NoteService {
 
         NoteEntity entity = NoteEntity.builder()
                 .user(user)
-                .title(aiResponse.getAdjustedTitle())
+                .title(getTitle(request, aiResponse))
                 .knowledgeBase(request.getKnowledgeBase())
                 .formattedNote(aiResponse.getFormattedNote())
-                .tags(aiResponse.getTagIds().stream()
-                        .map(tagRepository::getById)
-                        .collect(Collectors.toSet()))
+                .tags(getTags(request, aiResponse))
                 .proposedAiActions(aiActions).build();
 
         if (request.getFormateType() != null) {
@@ -78,6 +76,25 @@ public class NoteServiceImpl implements NoteService {
                 saved.getId(), saved.getTitle(), saved.getTags().size(), saved.getProposedAiActions().size());
 
         return mapper.toDto(saved);
+    }
+
+    private String getTitle(CreateNoteRequest request, NewNoteAiResponse aiResponse){
+        if (request.getTitle() != null && !request.getTitle().isBlank() && !request.isAdjustTitleWithAi()) {
+            return request.getTitle();
+        }
+        return aiResponse.getFormattedNote();
+    }
+
+    private Set<TagEntity> getTags(CreateNoteRequest request, NewNoteAiResponse aiResponse){
+        if (request.isAdjustTagsWithAi() || request.getTagIds() == null || request.getTagIds().isEmpty()) {
+            return aiResponse.getTagIds().stream()
+                    .map(tagRepository::getById)
+                    .collect(Collectors.toSet());
+        }
+
+        return request.getTagIds().stream()
+                .map(tagRepository::getById)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -115,11 +132,11 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public NoteDTO formateNoteKnowledgeBase(Long noteId, NoteFormatRequest request) {
+    public NoteDTO formateNoteKnowledgeBase(Long noteId, NoteKnowledgeFormatRequest request) {
         NoteEntity entity = noteRepository.getOrThrow(noteId);
 
         // Call AI with retry logic
-        FormatNoteAiResponse aiResponse = noteAiEditor.formatNote(noteId, request);
+        FormatNoteAiResponse aiResponse = noteAiEditor.formatNoteKnowledgeBase(noteId, request);
 
         entity.setTitle(aiResponse.getAdjustedTitle());
         entity.setKnowledgeBase(aiResponse.getKnowledgeBase());
@@ -143,6 +160,43 @@ public class NoteServiceImpl implements NoteService {
 
         NoteEntity saved = noteRepository.save(entity);
         log.info("Note formatted: id={}, title={}, tags={}, actions={}",
+                saved.getId(), saved.getTitle(), saved.getTags().size(), saved.getProposedAiActions().size());
+
+        return mapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public NoteDTO formateNote(Long noteId, FormateNoteRequest request) {
+        NoteEntity note = noteRepository.getOrThrow(noteId);
+
+        var formate = request.getFormateType() == null? FormateType.DEFAULT : request.getFormateType();
+
+        var req = CreateNoteRequest
+                .builder()
+                .title(note.getTitle())
+                .tagIds(note.getTags().stream().map(TagEntity::getId).collect(Collectors.toList()))
+                .knowledgeBase(note.getKnowledgeBase())
+                .formateType(formate)
+                .instructions(request.getInstructions())
+                .build();
+
+        NewNoteAiResponse aiResponse = noteAiEditor.adjustNote(req);
+
+        note.setFormattedNote(aiResponse.getFormattedNote());
+        note.setCurrentFormate(formate);
+
+        List<NoteEntity.AiAction> aiActions = aiResponse.getProposedAiActions().stream()
+                .map(action -> NoteEntity.AiAction.builder()
+                        .name(action.getName())
+                        .prompt(action.getPrompt())
+                        .build())
+                .collect(Collectors.toList());
+
+        note.setProposedAiActions(aiActions);
+
+        NoteEntity saved = noteRepository.save(note);
+        log.info("Note adjusted: id={}, title={}, tags={}, actions={}",
                 saved.getId(), saved.getTitle(), saved.getTags().size(), saved.getProposedAiActions().size());
 
         return mapper.toDto(saved);
@@ -202,13 +256,14 @@ public class NoteServiceImpl implements NoteService {
                 .collect(Collectors.joining());
 
         // Create a new note request with combined knowledge base
-        NoteCreateRequest createRequest = NoteCreateRequest.builder()
+        CreateNoteRequest createRequest = CreateNoteRequest.builder()
                 .title(request.getTitle())
                 .knowledgeBase(combinedKnowledgeBase)
                 .tagIds(request.getTagIds())
                 .type(com.notecastai.note.domain.NoteType.COMBINED)
                 .formateType(request.getFormateType())
-                .autoAiFormate(request.isAutoAiFormate())
+                .adjustTagsWithAi(request.isAdjustTagsWithAi())
+                .adjustTitleWithAi(request.isAdjustTitleWithAi())
                 .instructions(request.getInstructions())
                 .build();
 
@@ -250,7 +305,7 @@ public class NoteServiceImpl implements NoteService {
                 .title(entity.getTitle())
                 .tags(entity.getTags().stream()
                         .map(tag -> TagDTO.builder()
-                                .user(userMapper.toDto(tag.getUser()))
+                                .userId(tag.getUser().getId())
                                 .name(tag.getName())
                                 .build())
                         .toList())

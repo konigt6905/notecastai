@@ -37,7 +37,7 @@ public class NoteControllerV1 {
             @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
     })
     @PostMapping
-    public NoteDTO create(@Valid @RequestBody NoteCreateRequest request) {
+    public NoteDTO create(@Valid @RequestBody CreateNoteRequest request) {
         return noteService.create(request);
     }
 
@@ -134,9 +134,27 @@ public class NoteControllerV1 {
     public NoteDTO formateNoteKnowledgeBase(
             @Parameter(description = "Note ID", required = true)
             @PathVariable Long id,
-            @Valid @RequestBody NoteFormatRequest request
+            @Valid @RequestBody NoteKnowledgeFormatRequest request
     ) {
         return noteService.formateNoteKnowledgeBase(id, request);
+    }
+
+    @Operation(
+            summary = "Adjust note with AI",
+            description = "AI-adjust the note by formatting the content and optionally updating title and tags"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Note adjusted successfully"),
+            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content)
+    })
+    @PutMapping("/{id}/formate")
+    public NoteDTO adjustNote(
+            @Parameter(description = "Note ID", required = true)
+            @PathVariable Long id,
+            @Valid @RequestBody FormateNoteRequest request
+    ) {
+        return noteService.formateNote(id, request);
     }
 
     @Operation(

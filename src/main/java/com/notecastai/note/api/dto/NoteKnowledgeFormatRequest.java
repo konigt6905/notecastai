@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Builder
 @Data
-public class NoteFormatRequest {
-    private FormateType formateType; // optional
+public class NoteKnowledgeFormatRequest {
+
+    private FormateType formateType;
     private String instructions;  // optional
 }

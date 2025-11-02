@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NoteService {
 
-    NoteDTO create(NoteCreateRequest request);
+    NoteDTO create(CreateNoteRequest request);
 
     NoteDTO updateManual(Long id, NoteAdjustManualRequest request);
 
@@ -16,7 +16,9 @@ public interface NoteService {
 
     List<NoteFormatTypeDTO> listFormats();
 
-    NoteDTO formateNoteKnowledgeBase(Long noteId, NoteFormatRequest  request);
+    NoteDTO formateNoteKnowledgeBase(Long noteId, NoteKnowledgeFormatRequest request);
+
+    NoteDTO formateNote(Long noteId, FormateNoteRequest request);
 
     NoteQuestionResponse askQuestion(Long id, NoteQuestionRequest request);
 

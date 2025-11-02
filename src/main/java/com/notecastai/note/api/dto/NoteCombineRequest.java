@@ -29,7 +29,8 @@ public class NoteCombineRequest {
     // Optional
     private FormateType formateType;
 
-    private boolean autoAiFormate;
+    private boolean adjustTitleWithAi;
+    private boolean adjustTagsWithAi;
 
     // Optional
     private String instructions;

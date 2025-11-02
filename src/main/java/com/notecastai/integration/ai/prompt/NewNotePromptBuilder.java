@@ -68,7 +68,7 @@ public class NewNotePromptBuilder {
             
             1. **adjustedTitle**: 
                - If original title exists and is good, keep it or slightly improve it
-               - If no title or poor title, create a descriptive one (3-8 words)
+               - If no title or poor title, create a descriptive one (3-6 words)
                - Should accurately reflect the note's content
             
             2. **formattedNote**:
@@ -125,7 +125,7 @@ public class NewNotePromptBuilder {
                 : "(no tags available)";
 
         String instructionsSection = (userInstructions != null && !userInstructions.isBlank())
-                ? "- Additional Instructions: " + userInstructions
+                ? "- **SUPER IMPORTANT** Additional User Instructions: " + userInstructions
                 : "";
 
         String formatInstructionsRepeat = formateType != null

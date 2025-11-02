@@ -46,7 +46,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
     private final Retry noteAiRetry;
 
     @Override
-    public NewNoteAiResponse adjustNewNote(NoteCreateRequest request) {
+    public NewNoteAiResponse adjustNote(CreateNoteRequest request) {
         Long userId = userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId();
 
         // Get user's available tags
@@ -93,7 +93,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
     }
 
     @Override
-    public FormatNoteAiResponse formatNote(Long noteId, NoteFormatRequest request) {
+    public FormatNoteAiResponse formatNoteKnowledgeBase(Long noteId, NoteKnowledgeFormatRequest request) {
         NoteEntity note = noteRepository.getOrThrow(noteId);
         Long userId = note.getUser().getId();
 
@@ -102,7 +102,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
                 .map(TagEntity::getName)
                 .collect(Collectors.toList());
 
-        FormatNotePromptBuilder promptBuilder = FormatNotePromptBuilder.builder()
+        FormatNoteKnowledgeBasePromptBuilder promptBuilder = FormatNoteKnowledgeBasePromptBuilder.builder()
                 .currentTitle(note.getTitle())
                 .currentKnowledgeBase(note.getKnowledgeBase())
                 .formateType(request.getFormateType() != null ? request.getFormateType() : FormateType.DEFAULT)

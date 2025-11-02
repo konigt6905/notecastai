@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NoteCreateRequest {
+public class CreateNoteRequest {
 
     // Optional;
     private String title;
@@ -25,8 +25,8 @@ public class NoteCreateRequest {
     private NoteType type;
     // Optional
     private FormateType formateType;
-    private boolean autoAiFormate;
     // Optional
     private String instructions;
-
+    private boolean adjustTitleWithAi;
+    private boolean adjustTagsWithAi;
 }
