@@ -61,13 +61,17 @@ public class NoteServiceImpl implements NoteService {
                 .title(aiResponse.getAdjustedTitle())
                 .knowledgeBase(request.getKnowledgeBase())
                 .formattedNote(aiResponse.getFormattedNote())
-                .currentFormate(request.getFormateType())
-                .type(request.getType())
                 .tags(aiResponse.getTagIds().stream()
                         .map(tagRepository::getById)
                         .collect(Collectors.toSet()))
-                .proposedAiActions(aiActions)
-                .build();
+                .proposedAiActions(aiActions).build();
+
+        if (request.getFormateType() != null) {
+            entity.setCurrentFormate(request.getFormateType());
+        }
+        if (request.getType() != null) {
+            entity.setType(request.getType());
+        }
 
         NoteEntity saved = noteRepository.save(entity);
         log.info("Note created: id={}, title={}, tags={}, actions={}",

@@ -55,6 +55,7 @@ public enum OpenRouterModel {
 
         // TOP models
         GEMINI_2_5_FLASH_THINKING("google/gemini-2.5-flash-preview:thinking", 66000, 0.7, true),
+        GROK_FAST_1("x-ai/grok-code-fast-1", 66000, 0.7, true),
         GROK_3_MINI("x-ai/grok-3-mini-beta", 30000, 0.7, true),
         CLAUDE_3_5_SONNET("anthropic/claude-3.5-sonnet", 8191, 0.6, true);
 

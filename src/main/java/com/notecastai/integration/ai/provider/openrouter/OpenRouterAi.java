@@ -69,7 +69,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
             log.info("Calling OpenRouter AI for new note adjustment (attempt)");
 
             OpenRouterResponse response = openRouterClient.chatCompletion(
-                    OpenRouterModel.GEMINI_2_5_FLASH_THINKING,
+                    OpenRouterModel.GROK_FAST_1,
                     promptBuilder.getSystemPrompt(),
                     promptBuilder.getUserPrompt(),
                     JsonSchemaBuilder.buildNewNoteSchema()
@@ -115,7 +115,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
             log.info("Calling OpenRouter AI for note formatting (attempt)");
 
             OpenRouterResponse response = openRouterClient.chatCompletion(
-                    OpenRouterModel.GEMINI_2_5_FLASH_THINKING,
+                    OpenRouterModel.GROK_FAST_1,
                     promptBuilder.getSystemPrompt(),
                     promptBuilder.getUserPrompt(),
                     JsonSchemaBuilder.buildFormatNoteSchema()
@@ -165,7 +165,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
             log.info("Calling OpenRouter AI for transcript generation (attempt)");
 
             OpenRouterResponse aiResponse = openRouterClient.chatCompletion(
-                    OpenRouterModel.GPT_4O, // Use full GPT-4o for better creative writing
+                    OpenRouterModel.GROK_FAST_1,
                     promptBuilder.getSystemPrompt(),
                     promptBuilder.getUserPrompt(),
                     JsonSchemaBuilder.buildTranscriptSchema()
@@ -212,7 +212,7 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
             log.info("Calling OpenRouter AI for note chat (attempt)");
 
             OpenRouterResponse response = openRouterClient.chatCompletionMarkdown(
-                    OpenRouterModel.GEMINI_2_5_FLASH_THINKING,
+                    OpenRouterModel.GROK_FAST_1,
                     promptBuilder.getSystemPrompt(),
                     promptBuilder.getUserPrompt(),
                     messageHistory

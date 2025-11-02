@@ -3,13 +3,17 @@ package com.notecastai.note.api.dto;
 import com.notecastai.note.domain.FormateType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NoteCombineRequest {
 
     @NotEmpty(message = "At least one note ID is required")
