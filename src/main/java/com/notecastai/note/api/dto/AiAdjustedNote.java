@@ -1,13 +1,17 @@
 package com.notecastai.note.api.dto;
 
 import com.notecastai.tag.api.dto.TagDTO;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AiAdjustedNote {
 
     private String title;
@@ -18,6 +22,8 @@ public class AiAdjustedNote {
 
     @Data
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class AiActionDTO {
         private String name;
         private String prompt;

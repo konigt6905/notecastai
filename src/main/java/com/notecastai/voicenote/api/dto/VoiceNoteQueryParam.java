@@ -1,14 +1,18 @@
 package com.notecastai.voicenote.api.dto;
 
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VoiceNoteQueryParam {
 
     private VoiceNoteStatus status;

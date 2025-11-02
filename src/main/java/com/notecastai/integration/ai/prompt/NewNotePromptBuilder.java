@@ -1,14 +1,18 @@
 package com.notecastai.integration.ai.prompt;
 
 import com.notecastai.note.domain.FormateType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NewNotePromptBuilder {
 
     private String title;

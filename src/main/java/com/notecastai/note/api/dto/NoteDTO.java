@@ -5,14 +5,18 @@ import com.notecastai.note.domain.NoteType;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.user.api.dto.UserDTO;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NoteDTO {
 
     @NotNull

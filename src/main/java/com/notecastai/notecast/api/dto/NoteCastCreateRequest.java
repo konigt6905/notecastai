@@ -3,11 +3,15 @@ package com.notecastai.notecast.api.dto;
 import com.notecastai.notecast.domain.NoteCastStyle;
 import com.notecastai.notecast.domain.TranscriptSize;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NoteCastCreateRequest {
 
     @NotNull

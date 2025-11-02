@@ -3,13 +3,17 @@ package com.notecastai.voicenote.api.dto;
 
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class VoiceNoteDTO {
 
     @NotNull

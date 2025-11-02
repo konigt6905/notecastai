@@ -2,11 +2,13 @@ package com.notecastai.user.api.dto;
 
 import com.notecastai.note.domain.FormateType;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
+@AllArgsConstructor
 public class UserDTO {
     Long id;
     String clerkUserId;

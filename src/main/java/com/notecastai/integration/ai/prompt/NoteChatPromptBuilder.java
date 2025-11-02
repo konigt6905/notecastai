@@ -1,13 +1,17 @@
 package com.notecastai.integration.ai.prompt;
 
 import com.notecastai.note.domain.NoteEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NoteChatPromptBuilder {
 
     private NoteEntity note;

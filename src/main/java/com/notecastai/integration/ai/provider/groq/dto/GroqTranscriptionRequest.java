@@ -1,8 +1,10 @@
 package com.notecastai.integration.ai.provider.groq.dto;
 
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class GroqTranscriptionRequest {
 
     private final InputStream audioStream;
