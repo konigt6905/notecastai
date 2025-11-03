@@ -9,6 +9,7 @@ import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.tag.repo.TagRepository;
 import com.notecastai.tag.service.TagService;
 import com.notecastai.user.domain.UserEntity;
+import com.notecastai.user.infrastructure.repo.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper mapper;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -52,8 +54,10 @@ public class TagServiceImpl implements TagService {
             throw BusinessException.of(LIMIT_OF_TAGS_REECHOED.append(" Limit: " + MAX_TAGS_PER_USER));
         }
 
+        UserEntity user = userRepository.getOrThrow(userId);
+
         TagEntity entity = TagEntity.builder()
-                .user(UserEntity.builder().id(userId).build())
+                .user(user)
                 .name(normalized)
                 .build();
 
@@ -102,10 +106,12 @@ public class TagServiceImpl implements TagService {
 
     @Transactional
     public List<TagDTO> createDefaultTagsForUser(Long userId) {
+        UserEntity user = userRepository.getOrThrow(userId);
+
         List<TagEntity> tags = new ArrayList<>();
         for (String tagName : DEFAULT_TAGS) {
             TagEntity e = TagEntity.builder()
-                    .user(UserEntity.builder().id(userId).build())
+                    .user(user)
                     .name(tagName)
                     .build();
             tags.add(tagRepository.save(e));
