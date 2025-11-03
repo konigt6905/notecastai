@@ -23,7 +23,8 @@ public class BusinessException extends RuntimeException {
         TAG_ALREADY_EXIST("Validation failed, tag already exist."),
         RESOURCE_NOT_FOUND("Resource not found"),
         CONFLICT("Conflict "),
-        FORBIDDEN("Forbidden ");
+        FORBIDDEN("Forbidden "),
+        FEATURE_NOT_IMPLEMENTED("Feature not implemented");
 
         private final String defaultMessage;
         private String appender = "";

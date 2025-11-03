@@ -1,5 +1,6 @@
 package com.notecastai.voicenote.service.impl;
 
+import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.common.util.FileValidationUtil;
 import com.notecastai.common.util.SecurityUtils;
 import com.notecastai.integration.ai.TranscriptionService;
@@ -14,7 +15,7 @@ import com.notecastai.voicenote.api.Mapper.VoiceNoteMapper;
 import com.notecastai.voicenote.api.dto.*;
 import com.notecastai.voicenote.domain.VoiceNoteEntity;
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
-import com.notecastai.voicenote.infrastructure.repo.VoiceNoteRepository;
+import com.notecastai.voicenote.repo.VoiceNoteRepository;
 import com.notecastai.voicenote.service.VoiceNoteProcessorOrchestrator;
 import com.notecastai.voicenote.service.VoiceNoteService;
 import lombok.RequiredArgsConstructor;

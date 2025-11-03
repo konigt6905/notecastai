@@ -58,4 +58,14 @@ public class NoteRepository extends BaseRepository<NoteEntity, Long, NoteDao> {
     public Optional<NoteEntity> findById(Long id) {
         return super.findById(id);
     }
+
+    public Long countByUserAndPeriod(com.notecastai.user.domain.UserEntity user, java.time.Instant fromDate, java.time.Instant toDate) {
+        return CriteriaQueryBuilder.forEntity(NoteEntity.class, entityManager)
+                .where(b -> b
+                        .equal("user.id", user.getId())
+                        .greaterThanOrEqual("createdDate", fromDate)
+                        .lessThan("createdDate", toDate)
+                )
+                .count();
+    }
 }

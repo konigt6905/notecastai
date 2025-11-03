@@ -26,6 +26,7 @@ public class NoteCastResponseDTO {
     private TranscriptionLanguage language;
     private NoteCastStatus status;
     private NoteCastStyle style;
+    private String voice;
     private TranscriptSize size;
     private Instant createdDate;
     private Instant updatedDate;

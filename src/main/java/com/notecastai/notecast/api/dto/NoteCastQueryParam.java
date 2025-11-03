@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -15,7 +16,10 @@ import java.time.Instant;
 @NoArgsConstructor
 public class NoteCastQueryParam {
 
+    private List<Long> tagIds;
+
     private Long noteId;
+
     private NoteCastStatus status;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

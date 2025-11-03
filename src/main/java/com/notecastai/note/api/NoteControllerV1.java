@@ -1,10 +1,12 @@
 package com.notecastai.note.api;
 
 import com.notecastai.note.api.dto.*;
+import com.notecastai.note.domain.ExportFormat;
 import com.notecastai.note.service.NoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -221,5 +223,54 @@ public class NoteControllerV1 {
             @PathVariable Long tagId
     ) {
         return noteService.removeTag(noteId, tagId);
+    }
+
+    @Operation(
+            summary = "Export note",
+            description = "Export a note in various formats (MD, TXT, HTML, PDF, DOCX)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Note exported successfully"),
+            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid format", content = @Content)
+    })
+    @GetMapping("/{id}/export")
+    public org.springframework.http.ResponseEntity<byte[]> exportNote(
+            @Parameter(
+                    description = "Export format",
+                    required = false,
+                    schema = @Schema(allowableValues = {"MD", "TXT", "HTML", "PDF", "DOCX"})
+            )
+            @RequestParam(defaultValue = "MD") ExportFormat format,
+            @Parameter(description = "Note ID", required = true)
+            @PathVariable Long id
+    ) {
+        byte[] content = noteService.exportNote(id, format);
+        String fileName = "note_" + id + "." + format.getExtension();
+        return org.springframework.http.ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+                .header("Content-Type", format.getContentType())
+                .body(content);
+    }
+
+    @Operation(
+            summary = "Clone note",
+            description = "Create a copy of an existing note"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Note cloned successfully"),
+            @ApiResponse(responseCode = "404", description = "Note not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
+    })
+    @PostMapping("/{id}/clone")
+    public NoteDTO cloneNote(
+            @Parameter(description = "Note ID to clone", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Title for the cloned note")
+            @RequestParam(required = false) String title,
+            @Parameter(description = "Include formatted note in clone")
+            @RequestParam(defaultValue = "true") boolean includeFormattedNote
+    ) {
+        return noteService.cloneNote(id, title, includeFormattedNote);
     }
 }

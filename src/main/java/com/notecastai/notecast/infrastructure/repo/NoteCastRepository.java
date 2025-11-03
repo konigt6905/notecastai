@@ -44,15 +44,27 @@ public class NoteCastRepository extends BaseRepository<NoteCastEntity, Long, Not
                 .where(b -> b
                         .equal("note.user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
                         .equal("note.id", params.getNoteId())
+                        .joinIn("note.tags", "id", params.getTagIds())
                         .equal("status", params.getStatus())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
                 )
+                .distinct()
                 .paginate(pageable);
     }
 
     @Override
     public Optional<NoteCastEntity> findById(Long id) {
         return super.findById(id);
+    }
+
+    public Long countByUserAndPeriod(com.notecastai.user.domain.UserEntity user, java.time.Instant fromDate, java.time.Instant toDate) {
+        return CriteriaQueryBuilder.forEntity(NoteCastEntity.class, entityManager)
+                .where(b -> b
+                        .equal("note.user.id", user.getId())
+                        .greaterThanOrEqual("createdDate", fromDate)
+                        .lessThan("createdDate", toDate)
+                )
+                .count();
     }
 }

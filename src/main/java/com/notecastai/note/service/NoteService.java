@@ -1,6 +1,7 @@
 package com.notecastai.note.service;
 
 import com.notecastai.note.api.dto.*;
+import com.notecastai.note.domain.ExportFormat;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,4 +32,8 @@ public interface NoteService {
     NoteDTO removeTag(Long noteId, Long tagId);
 
     NoteDTO combine(NoteCombineRequest request);
+
+    byte[] exportNote(Long noteId, ExportFormat format);
+
+    NoteDTO cloneNote(Long noteId, String newTitle, boolean includeFormattedNote);
 }

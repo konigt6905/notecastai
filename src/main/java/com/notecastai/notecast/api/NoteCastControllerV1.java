@@ -1,6 +1,10 @@
 package com.notecastai.notecast.api;
 
 import com.notecastai.notecast.api.dto.*;
+import com.notecastai.notecast.api.mapper.TtsVoiceMapper;
+import com.notecastai.notecast.domain.NoteCastStyle;
+import com.notecastai.notecast.domain.TranscriptSize;
+import com.notecastai.notecast.domain.TtsVoice;
 import com.notecastai.notecast.service.NoteCastService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,6 +30,7 @@ import java.util.List;
 public class NoteCastControllerV1 {
 
     private final NoteCastService noteCastService;
+    private final TtsVoiceMapper ttsVoiceMapper;
 
     @Operation(
             summary = "Create notecast",
@@ -123,5 +128,59 @@ public class NoteCastControllerV1 {
             @PathVariable Long id
     ) {
         noteCastService.delete(id);
+    }
+
+    @Operation(
+            summary = "List available TTS voices",
+            description = "Get all available Text-to-Speech voices for notecast generation with preview audio URLs"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Voices retrieved successfully"),
+            @ApiResponse(responseCode = "500", description = "Failed to generate voice preview URLs", content = @Content)
+    })
+    @GetMapping("/voices")
+    public List<TtsVoiceDTO> listVoices() {
+        return ttsVoiceMapper.getAllVoices();
+    }
+
+    @Operation(
+            summary = "Regenerate notecast",
+            description = "Regenerate an existing notecast with optional style, voice, or size changes"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Regeneration started successfully"),
+            @ApiResponse(responseCode = "404", description = "NoteCast not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PostMapping("/{id}/regenerate")
+    public NoteCastResponseDTO regenerate(
+            @Parameter(description = "NoteCast ID", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "New style for regeneration")
+            @RequestParam(required = false) NoteCastStyle style,
+            @Parameter(description = "New voice for regeneration")
+            @RequestParam(required = false) TtsVoice voice,
+            @Parameter(description = "New size for regeneration")
+            @RequestParam(required = false) TranscriptSize size
+    ) {
+        return noteCastService.regenerate(id, style, voice, size);
+    }
+
+    @Operation(
+            summary = "Get shareable link for notecast",
+            description = "Generate a shareable public link for a notecast"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Share link generated successfully"),
+            @ApiResponse(responseCode = "404", description = "NoteCast not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/{id}/share")
+    public NoteCastShareResponse share(
+            @Parameter(description = "NoteCast ID", required = true)
+            @PathVariable Long id
+    ) {
+        return noteCastService.generateShareLink(id);
     }
 }

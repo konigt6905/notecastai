@@ -71,7 +71,7 @@ public class CriteriaQueryBuilder<T extends Serializable> {
                     .setMaxResults(pageable.getPageSize());
 
             List<T> content = dataQuery.getResultList();
-            long total = count(ctx, preds);
+            long total = countInternal(ctx, preds);
 
             return new PageImpl<>(content, pageable, total);
         } finally {
@@ -90,7 +90,39 @@ public class CriteriaQueryBuilder<T extends Serializable> {
         return out;
     }
 
-    private long count(Ctx<T> ctx, List<Predicate> preds) {
+    public Long count() {
+        Session session = null;
+        if (includeInactive && BaseEntity.class.isAssignableFrom(entityClass)) {
+            session = em.unwrap(Session.class);
+            session.enableFilter("none");
+        }
+
+        try {
+            Ctx<T> ctx = new Ctx<>(em, entityClass);
+            CriteriaQuery<Long> cq = ctx.cb.createQuery(Long.class);
+            Root<T> root = cq.from(entityClass);
+
+            // Use count or countDistinct based on the distinct flag
+            if (distinct) {
+                cq.select(ctx.cb.countDistinct(root));
+            } else {
+                cq.select(ctx.cb.count(root));
+            }
+
+            List<Predicate> preds = buildPredicates(ctx.withRoot(root));
+            if (!preds.isEmpty()) {
+                cq.where(preds.toArray(Predicate[]::new));
+            }
+
+            return em.createQuery(cq).getSingleResult();
+        } finally {
+            if (session != null && includeInactive) {
+                // Re-enable the soft delete filter
+            }
+        }
+    }
+
+    private long countInternal(Ctx<T> ctx, List<Predicate> preds) {
         CriteriaQuery<Long> cq = ctx.cb.createQuery(Long.class);
         Root<T> root = cq.from(entityClass);
         cq.select(ctx.cb.countDistinct(root));

@@ -1,4 +1,4 @@
-package com.notecastai.voicenote.infrastructure.repo;
+package com.notecastai.voicenote.repo;
 
 import com.notecastai.common.BaseRepository;
 import com.notecastai.common.exeption.BusinessException;
@@ -45,14 +45,27 @@ public class VoiceNoteRepository extends BaseRepository<VoiceNoteEntity, Long, V
                 .where(b -> b
                         .equal("user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
                         .equal("status", params.getStatus())
+                        .joinIn("note.tags", "id", params.getTagIds())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
                 )
+                .distinct()
                 .paginate(pageable);
     }
 
     @Override
     public Optional<VoiceNoteEntity> findById(Long id) {
         return super.findById(id);
+    }
+
+    public Long countProcessedByUserAndPeriod(com.notecastai.user.domain.UserEntity user, java.time.Instant fromDate, java.time.Instant toDate) {
+        return CriteriaQueryBuilder.forEntity(VoiceNoteEntity.class, entityManager)
+                .where(b -> b
+                        .equal("user.id", user.getId())
+                        .equal("status", com.notecastai.voicenote.domain.VoiceNoteStatus.PROCESSED)
+                        .greaterThanOrEqual("createdDate", fromDate)
+                        .lessThan("createdDate", toDate)
+                )
+                .count();
     }
 }

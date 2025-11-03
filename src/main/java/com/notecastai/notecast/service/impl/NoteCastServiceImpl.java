@@ -5,9 +5,7 @@ import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.note.infrastructure.repo.NoteRepository;
 import com.notecastai.notecast.api.dto.*;
 import com.notecastai.notecast.api.mapper.NoteCastMapper;
-import com.notecastai.notecast.domain.NoteCastEntity;
-import com.notecastai.notecast.domain.NoteCastStatus;
-import com.notecastai.notecast.domain.NoteCastStyle;
+import com.notecastai.notecast.domain.*;
 import com.notecastai.notecast.event.dto.NoteCastCreatedEvent;
 import com.notecastai.notecast.infrastructure.repo.NoteCastRepository;
 import com.notecastai.notecast.service.NoteCastService;
@@ -33,8 +31,12 @@ public class NoteCastServiceImpl implements NoteCastService {
 
     private final NoteCastRepository noteCastRepository;
     private final NoteRepository noteRepository;
+    private final com.notecastai.user.infrastructure.repo.UserRepository userRepository;
     private final NoteCastMapper mapper;
     private final ApplicationEventPublisher eventPublisher;
+
+    @org.springframework.beans.factory.annotation.Value("${application.domain}")
+    private String applicationDomain;
 
     @Override
     @Transactional
@@ -50,6 +52,8 @@ public class NoteCastServiceImpl implements NoteCastService {
                 .note(note)
                 .status(NoteCastStatus.WAITING_FOR_TRANSCRIPT)
                 .style(request.getStyle())
+                .size(request.getSize())
+                .voice(request.getVoice() == null? TtsVoice.getDefault() : request.getVoice())
                 .build();
 
         entity = noteCastRepository.save(entity);
@@ -63,7 +67,8 @@ public class NoteCastServiceImpl implements NoteCastService {
                 request.getSize()
         ));
 
-        log.info("NoteCast created and event published: {}", entity.getId());
+        log.info("NoteCast created and event published: {} with voice: {}, size: {}",
+                entity.getId(), request.getVoice(), request.getSize());
 
         return mapper.toDto(entity);
     }
@@ -138,6 +143,86 @@ public class NoteCastServiceImpl implements NoteCastService {
                 .status(entity.getStatus())
                 .style(entity.getStyle())
                 .createdDate(entity.getCreatedDate())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public NoteCastResponseDTO regenerate(Long id, NoteCastStyle style, TtsVoice voice, TranscriptSize size) {
+        NoteCastEntity noteCast = noteCastRepository.getOrThrow(id);
+
+        if (style != null) {
+            noteCast.setStyle(style);
+        }
+
+        if (voice != null) {
+            noteCast.setVoice(voice);
+        }
+
+        if (size != null) {
+            noteCast.setSize(size);
+        }
+
+        noteCast.setStatus(NoteCastStatus.WAITING_FOR_TRANSCRIPT);
+        noteCast.setTranscript(null); // Clear old transcript
+        noteCast.setS3FileUrl(null); // Clear old audio
+        noteCast.setErrorMessage(null); // Clear any previous errors
+
+        noteCast = noteCastRepository.save(noteCast);
+
+        // Publish event to trigger async regeneration
+        NoteEntity note = noteCast.getNote();
+        eventPublisher.publishEvent(new NoteCastCreatedEvent(
+                this,
+                noteCast.getId(),
+                note.getFormattedNote(),
+                noteCast.getStyle(),
+                noteCast.getSize()
+        ));
+
+        log.info("Regeneration triggered for notecast {} with style: {}, voice: {}, size: {}",
+                id, noteCast.getStyle(), noteCast.getVoice(), noteCast.getSize());
+
+        return mapper.toDto(noteCast);
+    }
+
+    @Override
+    @Transactional
+    public NoteCastShareResponse generateShareLink(Long id) {
+        NoteCastEntity noteCast = noteCastRepository.getOrThrow(id);
+
+        // Check if notecast is in a shareable state
+        if (noteCast.getStatus() != NoteCastStatus.PROCESSED) {
+            throw com.notecastai.common.exeption.BusinessException.of(
+                com.notecastai.common.exeption.BusinessException.BusinessCode.INVALID_REQUEST
+                    .append(" Notecast must be completed before sharing")
+            );
+        }
+
+        java.time.Instant now = java.time.Instant.now();
+        if (noteCast.getShareToken() == null ||
+            noteCast.getShareExpiresAt() == null ||
+            noteCast.getShareExpiresAt().isBefore(now)) {
+
+            // Generate new token
+            String token = java.util.UUID.randomUUID().toString().replace("-", "");
+
+            // Set expiration to 30 days from now
+            java.time.Instant expiresAt = now.plus(30, java.time.temporal.ChronoUnit.DAYS);
+
+            noteCast.setShareToken(token);
+            noteCast.setShareExpiresAt(expiresAt);
+
+            noteCast = noteCastRepository.save(noteCast);
+        }
+
+        // Build share URL using configured application domain
+        String shareUrl = applicationDomain + "/public/notecast/" + noteCast.getShareToken();
+
+        return NoteCastShareResponse.builder()
+                .shareUrl(shareUrl)
+                .shareToken(noteCast.getShareToken())
+                .expiresAt(noteCast.getShareExpiresAt())
                 .build();
     }
 }

@@ -57,7 +57,21 @@ public class NoteCastEntity extends BaseEntity {
     @Column(name = "style", nullable = false, length = 30)
     private NoteCastStyle style;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "voice", length = 50)
+    private TtsVoice voice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "size", length = 20)
+    private TranscriptSize size;
+
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
+
+    @Column(name = "share_token", unique = true, length = 100)
+    private String shareToken;
+
+    @Column(name = "share_expires_at")
+    private java.time.Instant shareExpiresAt;
 
 }

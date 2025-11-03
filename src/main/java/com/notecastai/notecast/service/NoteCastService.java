@@ -2,6 +2,9 @@ package com.notecastai.notecast.service;
 
 import com.notecastai.notecast.api.dto.*;
 import com.notecastai.notecast.domain.NoteCastStatus;
+import com.notecastai.notecast.domain.NoteCastStyle;
+import com.notecastai.notecast.domain.TranscriptSize;
+import com.notecastai.notecast.domain.TtsVoice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,5 +29,9 @@ public interface NoteCastService {
     void updateWithTranscript(Long noteCastId, String transcript);
 
     void updateWithError(Long noteCastId, String errorMessage);
+
+    NoteCastResponseDTO regenerate(Long id, NoteCastStyle style, TtsVoice voice, TranscriptSize size);
+
+    NoteCastShareResponse generateShareLink(Long id);
 
 }

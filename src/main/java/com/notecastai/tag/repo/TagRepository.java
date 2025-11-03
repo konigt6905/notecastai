@@ -4,6 +4,8 @@ import com.notecastai.common.BaseRepository;
 import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.tag.domain.TagEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,5 +39,10 @@ public class TagRepository extends BaseRepository<TagEntity, Long, TagDao> {
 
     public TagEntity findByNameAndUserId(String trim, Long userId) {
         return dao.findByNameAndUser_Id(trim, userId);
+    }
+
+    public List<TagDao.TagUsageProjection> findTopTagsByUserId(Long userId, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return dao.findTopTagsByUserId(userId, pageable);
     }
 }

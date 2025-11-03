@@ -2,6 +2,7 @@ package com.notecastai.notecast.api.dto;
 
 import com.notecastai.notecast.domain.NoteCastStyle;
 import com.notecastai.notecast.domain.TranscriptSize;
+import com.notecastai.notecast.domain.TtsVoice;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +21,7 @@ public class NoteCastCreateRequest {
     private NoteCastStyle style;
     @NotNull
     private TranscriptSize size;
+
+    private TtsVoice voice; // Optional
 
 }

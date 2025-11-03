@@ -7,6 +7,7 @@ import com.notecastai.integration.ai.provider.openrouter.dto.FormatNoteAiRespons
 import com.notecastai.integration.ai.provider.openrouter.dto.NewNoteAiResponse;
 import com.notecastai.note.api.dto.*;
 import com.notecastai.note.api.mapper.NoteMapper;
+import com.notecastai.note.domain.ExportFormat;
 import com.notecastai.note.domain.FormateType;
 import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.note.infrastructure.repo.NoteRepository;
@@ -14,7 +15,6 @@ import com.notecastai.note.service.NoteService;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.tag.repo.TagRepository;
-import com.notecastai.user.api.mapper.UserMapper;
 import com.notecastai.user.domain.UserEntity;
 import com.notecastai.user.infrastructure.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +39,7 @@ public class NoteServiceImpl implements NoteService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final NoteMapper mapper;
-    private final UserMapper userMapper;
+    private final NoteExportService noteExportService;
     private final NoteAiEditor noteAiEditor;
     private final NoteAiChat noteAiChat;
 
@@ -312,6 +315,84 @@ public class NoteServiceImpl implements NoteService {
                 .createdDate(entity.getCreatedDate())
                 .updatedDate(entity.getUpdatedDate())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] exportNote(Long noteId, ExportFormat format) {
+        NoteEntity note = noteRepository.getOrThrow(noteId);
+
+        // Verify user owns the note
+        UserEntity currentUser = userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow());
+        if (!note.getUser().getId().equals(currentUser.getId())) {
+            throw com.notecastai.common.exeption.BusinessException.of(
+                com.notecastai.common.exeption.BusinessException.BusinessCode.FORBIDDEN
+                    .append(" You don't have permission to export this note")
+            );
+        }
+
+        String content = buildExportContent(note, format);
+
+        if (format == ExportFormat.MD) {
+            return noteExportService.exportAsMarkdown(mapper.toDto(note), content);
+        } else if (format == ExportFormat.TXT) {
+            return noteExportService.exportAsText(mapper.toDto(note), content);
+        } else if (format == ExportFormat.HTML) {
+            return noteExportService.exportAsHtml(mapper.toDto(note), content);
+        } else if (format == ExportFormat.PDF) {
+            return noteExportService.exportAsPdf(mapper.toDto(note), content);
+        } else if (format == ExportFormat.DOCX) {
+            return noteExportService.exportAsDocx(mapper.toDto(note), content);
+        }
+
+        // This should never happen due to enum validation
+        throw com.notecastai.common.exeption.BusinessException.of(
+            com.notecastai.common.exeption.BusinessException.BusinessCode.INVALID_REQUEST
+                .append(" Unsupported export format: " + format)
+        );
+    }
+
+    private String buildExportContent(NoteEntity note, ExportFormat format) {
+        // Build content based on what's available in the note
+        if (note.getFormattedNote() != null && !note.getFormattedNote().isEmpty()) {
+            return note.getFormattedNote();
+        } else if (note.getKnowledgeBase() != null && !note.getKnowledgeBase().isEmpty()) {
+            return note.getKnowledgeBase();
+        } else {
+            return "# " + note.getTitle() + "\n\nNo content available.";
+        }
+    }
+
+    @Override
+    @Transactional
+    public NoteDTO cloneNote(Long noteId, String newTitle, boolean includeFormattedNote) {
+        NoteEntity originalNote = noteRepository.getOrThrow(noteId);
+
+        // Verify user owns the note
+        UserEntity currentUser = userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow());
+        if (!originalNote.getUser().getId().equals(currentUser.getId())) {
+            throw com.notecastai.common.exeption.BusinessException.of(
+                com.notecastai.common.exeption.BusinessException.BusinessCode.FORBIDDEN
+                    .append(" You don't have permission to clone this note")
+            );
+        }
+
+        // Create the cloned note
+        NoteEntity clonedNote = NoteEntity.builder()
+                .user(currentUser)
+                .title(newTitle != null ? newTitle : "Copy of " + originalNote.getTitle())
+                .knowledgeBase(originalNote.getKnowledgeBase())
+                .formattedNote(includeFormattedNote ? originalNote.getFormattedNote() : null)
+                .currentFormate(originalNote.getCurrentFormate())
+                .type(originalNote.getType())
+                .tags(new HashSet<>(originalNote.getTags())) // Copy tags
+                .build();
+
+        clonedNote = noteRepository.save(clonedNote);
+
+        log.info("Cloned note {} to new note {}", noteId, clonedNote.getId());
+
+        return mapper.toDto(clonedNote);
     }
 
 }
