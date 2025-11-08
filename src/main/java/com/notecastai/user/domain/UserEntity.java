@@ -2,7 +2,7 @@ package com.notecastai.user.domain;
 
 import com.notecastai.common.BaseEntity;
 import com.notecastai.note.domain.FormateType;
-import com.notecastai.user.api.dto.PreferredVoice;
+import com.notecastai.notecast.domain.TtsVoice;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,8 +52,8 @@ public class UserEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    @Column(name = "preferred_voice", nullable = false, length = 40)
-    private PreferredVoice preferredVoice = PreferredVoice.DEFAULT;
+    @Column(name = "default_voice", nullable = false, length = 40)
+    private TtsVoice defaultVoice = TtsVoice.getDefault();
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

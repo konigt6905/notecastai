@@ -14,11 +14,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -141,6 +145,26 @@ public class NoteCastControllerV1 {
     @GetMapping("/voices")
     public List<TtsVoiceDTO> listVoices() {
         return ttsVoiceMapper.getAllVoices();
+    }
+
+    @Operation(
+            summary = "Get voice preview audio",
+            description = "Stream the preview audio file for a specific TTS voice"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Audio file streamed successfully"),
+            @ApiResponse(responseCode = "404", description = "Voice not found", content = @Content)
+    })
+    @GetMapping("/voices/preview/{voiceId}")
+    public ResponseEntity<Resource> getVoicePreview(
+            @Parameter(description = "Voice ID", required = true)
+            @PathVariable String voiceId
+    ) {
+        TtsVoice voice = TtsVoice.fromId(voiceId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("audio/wav"))
+                .body(new ClassPathResource(voice.getSampleResourcePath()));
     }
 
     @Operation(

@@ -1,6 +1,7 @@
 package com.notecastai.user.api.dto;
 
 import com.notecastai.note.domain.FormateType;
+import com.notecastai.notecast.domain.TtsVoice;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,6 @@ public class UserDTO {
     String familyName;
     String pictureUrl;
     FormateType defaultFormate;
-    PreferredVoice preferredVoice;
+    TtsVoice defaultVoice;
     TranscriptionLanguage preferredLanguage;
 }

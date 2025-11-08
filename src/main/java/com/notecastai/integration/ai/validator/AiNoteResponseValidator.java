@@ -224,10 +224,6 @@ public class AiNoteResponseValidator {
             errors.add("Knowledge base cannot be empty");
             return;
         }
-
-        if (knowledgeBase.length() < 50) {
-            errors.add("Knowledge base too short (minimum 50 characters)");
-        }
     }
 
     private void validateProposedTags(List<String> proposedTags, Long userId, List<String> errors) {

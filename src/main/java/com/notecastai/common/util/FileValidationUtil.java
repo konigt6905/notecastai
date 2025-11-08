@@ -34,7 +34,7 @@ public class FileValidationUtil {
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_AUDIO_TYPES.contains(contentType.toLowerCase())) {
             throw BusinessException.of(INVALID_REQUEST.append(
-                    " Invalid file type. Allowed types: MP3, WAV, M4A, WEBM, OGG, FLAC"
+                    " Invalid file type. Allowed types: MP3, WAV, M4A, WEBM, OGG, FLAC. Used type: " + contentType
             ));
         }
 

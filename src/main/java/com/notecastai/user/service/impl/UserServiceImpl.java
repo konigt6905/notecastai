@@ -62,8 +62,8 @@ public class UserServiceImpl implements UserService {
             entity.setDefaultFormate(request.getDefaultFormate());
         }
 
-        if (request.getPreferredVoice() != null) {
-            entity.setPreferredVoice(request.getPreferredVoice());
+        if (request.getDefaultVoice() != null) {
+            entity.setDefaultVoice(request.getDefaultVoice());
         }
 
         if (request.getPreferredLanguage() != null) {

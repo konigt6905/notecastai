@@ -81,8 +81,9 @@ public class S3StorageService implements StorageService {
         }
         var req = GetObjectRequest.builder().bucket(bucket).key(key).build();
         var url = presigner.presignGetObject(b -> b.signatureDuration(PRESIGNED_URL_TTL).getObjectRequest(req)).url();
+
         try {
-            return url.getPath();
+            return url.toString();
         } catch (Exception ex) {
             throw TechnicalException.of(TechnicalException.Code.S3_ERROR)
                     .with("key", key)

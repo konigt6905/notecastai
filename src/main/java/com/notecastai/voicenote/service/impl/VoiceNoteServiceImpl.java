@@ -2,7 +2,7 @@ package com.notecastai.voicenote.service.impl;
 
 import com.notecastai.common.util.FileValidationUtil;
 import com.notecastai.common.util.SecurityUtils;
-import com.notecastai.integration.storage.s3.S3StorageService;
+import com.notecastai.integration.storage.StorageService;
 import com.notecastai.note.api.dto.CreateNoteRequest;
 import com.notecastai.note.api.dto.NoteDTO;
 import com.notecastai.note.domain.NoteType;
@@ -38,7 +38,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
     private final VoiceNoteProcessorOrchestrator voiceNoteProcessorOrchestrator;
     private final NoteService noteService;
     private final VoiceNoteHelper voiceNoteHelper;
-    private final S3StorageService s3StorageService;
+    private final StorageService s3StorageService;
 
     @Override
     @Transactional

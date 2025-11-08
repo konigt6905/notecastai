@@ -1,5 +1,6 @@
 package com.notecastai.notecast.domain;
 
+import com.notecastai.common.exeption.BusinessException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,55 +8,54 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TtsVoice {
 
-    // Female voices
-    SARAH_EN("voice-sarah-en", "Sarah (English)", "en", "female",
-            "Professional and clear American English voice",
-            "voices/samples/sarah-en-sample.mp3"),
+    // Female voices - Kokoro TTS
+    BELLA("bella_af", "Bella", "en", "female",
+            "Warm and pleasant female voice with natural intonation",
+            "audio/bella.wav"),
 
-    EMMA_EN("voice-emma-en", "Emma (English)", "en", "female",
-            "Warm and friendly British English voice",
-            "voices/samples/emma-en-sample.mp3"),
+    NICOLE("nicole_af", "Nicole", "en", "female",
+            "Friendly and approachable female voice, clear and expressive",
+            "audio/nicole.wav"),
 
-    SOPHIA_EN("voice-sophia-en", "Sophia (English)", "en", "female",
-            "Energetic and engaging voice with natural intonation",
-            "voices/samples/sophia-en-sample.mp3"),
+    SKY("sky_af", "Sky", "en", "female",
+            "Light and airy female voice with ethereal quality",
+            "audio/sky.wav"),
 
-    // Male voices
-    JAMES_EN("voice-james-en", "James (English)", "en", "male",
-            "Deep and authoritative American English voice",
-            "voices/samples/james-en-sample.mp3"),
+    ECHO("echo_af", "Echo", "en", "female",
+            "Ethereal female voice with unique resonant characteristics",
+            "audio/echo.wav"),
 
-    OLIVER_EN("voice-oliver-en", "Oliver (English)", "en", "male",
-            "Friendly and conversational British English voice",
-            "voices/samples/oliver-en-sample.mp3"),
+    // Male voices - Kokoro TTS
+    LIAM("liam_am", "Liam", "en", "male",
+            "Smooth and engaging male voice with natural cadence",
+            "audio/liam.wav"),
 
-    MICHAEL_EN("voice-michael-en", "Michael (English)", "en", "male",
-            "Clear and professional narrator voice",
-            "voices/samples/michael-en-sample.mp3"),
+    MICHAEL("am_michael", "Michael", "en", "male",
+            "Professional and clear male voice, excellent for narration",
+            "audio/michael.wav"),
 
-    // International voices
-    MARIE_FR("voice-marie-fr", "Marie (French)", "fr", "female",
-            "Native French speaker with Parisian accent",
-            "voices/samples/marie-fr-sample.mp3"),
+    ERIC("eric_am", "Eric", "en", "male",
+            "Professional and articulate male voice with neutral accent",
+            "audio/eric.wav"),
 
-    HANS_DE("voice-hans-de", "Hans (German)", "de", "male",
-            "Clear German voice with standard Hochdeutsch pronunciation",
-            "voices/samples/hans-de-sample.mp3"),
+    HART("hart_am", "Hart", "en", "male",
+            "Strong and bold male voice with commanding presence",
+            "audio/hart.wav"),
 
-    LUCIA_ES("voice-lucia-es", "Lucia (Spanish)", "es", "female",
-            "Natural Castilian Spanish voice",
-            "voices/samples/lucia-es-sample.mp3"),
+    PUNCH("punch_am", "Punch", "en", "male",
+            "Energetic and punchy male voice with dynamic delivery",
+            "audio/punch.wav"),
 
-    YUKI_JA("voice-yuki-ja", "Yuki (Japanese)", "ja", "female",
-            "Native Japanese speaker with Tokyo accent",
-            "voices/samples/yuki-ja-sample.mp3");
+    FENRIR("fenrir_am", "Fenrir", "en", "male",
+            "Deep and powerful male voice with authoritative tone",
+            "audio/renrir.wav");
 
     private final String id;
     private final String name;
     private final String language;
     private final String gender;
     private final String description;
-    private final String s3SamplePath;
+    private final String sampleResourcePath;
 
     /**
      * Find a voice by its ID
@@ -68,14 +68,14 @@ public enum TtsVoice {
                 return voice;
             }
         }
-        return null;
+         throw BusinessException.of(BusinessException.BusinessCode.ENTITY_NOT_FOUND);
     }
 
     /**
      * Get the default voice
-     * @return The default TTS voice (Sarah English)
+     * @return The default TTS voice (Bella)
      */
     public static TtsVoice getDefault() {
-        return SARAH_EN;
+        return BELLA;
     }
 }

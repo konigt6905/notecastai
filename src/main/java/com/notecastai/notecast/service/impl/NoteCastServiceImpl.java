@@ -1,6 +1,7 @@
 package com.notecastai.notecast.service.impl;
 
 import com.notecastai.common.exeption.BusinessException;
+import com.notecastai.common.util.SecurityUtils;
 import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.note.infrastructure.repo.NoteRepository;
 import com.notecastai.notecast.api.dto.*;
@@ -9,6 +10,7 @@ import com.notecastai.notecast.domain.*;
 import com.notecastai.notecast.event.dto.NoteCastCreatedEvent;
 import com.notecastai.notecast.infrastructure.repo.NoteCastRepository;
 import com.notecastai.notecast.service.NoteCastService;
+import com.notecastai.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,6 +34,7 @@ public class NoteCastServiceImpl implements NoteCastService {
     private final NoteCastRepository noteCastRepository;
     private final NoteRepository noteRepository;
     private final com.notecastai.user.infrastructure.repo.UserRepository userRepository;
+    private final UserService userService;
     private final NoteCastMapper mapper;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -53,7 +56,8 @@ public class NoteCastServiceImpl implements NoteCastService {
                 .status(NoteCastStatus.WAITING_FOR_TRANSCRIPT)
                 .style(request.getStyle())
                 .size(request.getSize())
-                .voice(request.getVoice() == null? TtsVoice.getDefault() : request.getVoice())
+                .voice(request.getVoice() == null ?
+                        getUserDefaultVoice() : request.getVoice())
                 .build();
 
         entity = noteCastRepository.save(entity);
@@ -71,6 +75,10 @@ public class NoteCastServiceImpl implements NoteCastService {
                 entity.getId(), request.getVoice(), request.getSize());
 
         return mapper.toDto(entity);
+    }
+
+    private TtsVoice getUserDefaultVoice() {
+        return userService.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getDefaultVoice();
     }
 
     @Override
@@ -194,15 +202,15 @@ public class NoteCastServiceImpl implements NoteCastService {
         // Check if notecast is in a shareable state
         if (noteCast.getStatus() != NoteCastStatus.PROCESSED) {
             throw com.notecastai.common.exeption.BusinessException.of(
-                com.notecastai.common.exeption.BusinessException.BusinessCode.INVALID_REQUEST
-                    .append(" Notecast must be completed before sharing")
+                    com.notecastai.common.exeption.BusinessException.BusinessCode.INVALID_REQUEST
+                            .append(" Notecast must be completed before sharing")
             );
         }
 
         java.time.Instant now = java.time.Instant.now();
         if (noteCast.getShareToken() == null ||
-            noteCast.getShareExpiresAt() == null ||
-            noteCast.getShareExpiresAt().isBefore(now)) {
+                noteCast.getShareExpiresAt() == null ||
+                noteCast.getShareExpiresAt().isBefore(now)) {
 
             // Generate new token
             String token = java.util.UUID.randomUUID().toString().replace("-", "");

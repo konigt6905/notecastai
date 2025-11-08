@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TtsVoiceDTO {
     private String id;
+    private String enumName;
     private String name;
     private String language;
     private String gender;
