@@ -15,8 +15,6 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,6 +28,8 @@ public class S3StorageService implements StorageService {
 
     @Value("${aws.s3.bucket}")
     String bucket;
+
+    private static final Duration PRESIGNED_URL_TTL = Duration.ofHours(24);
 
     @Override
     public String put(String key, InputStream data, long size, String ct) {
@@ -58,13 +58,16 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public URI presignedPut(String key, String ct, Duration ttl) {
+    public String presignedPut(String key, String ct) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
         var req = PutObjectRequest.builder().bucket(bucket).key(key).contentType(ct).build();
-        var url = presigner.presignPutObject(b -> b.signatureDuration(ttl).putObjectRequest(req)).url();
+        var url = presigner.presignPutObject(b -> b.signatureDuration(PRESIGNED_URL_TTL).putObjectRequest(req)).url();
         try {
-            return url.toURI();
-        } catch (URISyntaxException ex) {
-            throw TechnicalException.of(TechnicalException.Code.STORAGE_PRESIGN_URI_INVALID)
+            return url.getPath();
+        } catch (Exception ex) {
+            throw TechnicalException.of(TechnicalException.Code.S3_ERROR)
                     .with("key", key)
                     .cause(ex)
                     .build();
@@ -72,13 +75,16 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public URI presignedGet(String key, Duration ttl) {
+    public String presignedGet(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
         var req = GetObjectRequest.builder().bucket(bucket).key(key).build();
-        var url = presigner.presignGetObject(b -> b.signatureDuration(ttl).getObjectRequest(req)).url();
+        var url = presigner.presignGetObject(b -> b.signatureDuration(PRESIGNED_URL_TTL).getObjectRequest(req)).url();
         try {
-            return url.toURI();
-        } catch (URISyntaxException ex) {
-            throw TechnicalException.of(TechnicalException.Code.STORAGE_PRESIGN_URI_INVALID)
+            return url.getPath();
+        } catch (Exception ex) {
+            throw TechnicalException.of(TechnicalException.Code.S3_ERROR)
                     .with("key", key)
                     .cause(ex)
                     .build();
