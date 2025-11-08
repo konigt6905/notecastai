@@ -7,15 +7,12 @@ import com.notecastai.common.util.SecurityUtils;
 import com.notecastai.user.infrastructure.repo.UserRepository;
 import com.notecastai.voicenote.api.dto.VoiceNoteQueryParam;
 import com.notecastai.voicenote.domain.VoiceNoteEntity;
-import com.notecastai.voicenote.repo.VoiceNoteDao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 import static com.notecastai.common.exeption.BusinessException.BusinessCode.ENTITY_NOT_FOUND;
 
@@ -44,8 +41,9 @@ public class VoiceNoteRepository extends BaseRepository<VoiceNoteEntity, Long, V
         return CriteriaQueryBuilder.forEntity(VoiceNoteEntity.class, entityManager)
                 .where(b -> b
                         .equal("user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
+                        .likeIgnoreCaseMultiple(params.getSearch(), "originalFilename", "transcript")
                         .equal("status", params.getStatus())
-                        .joinIn("note.tags", "id", params.getTagIds())
+                        .joinIn("tags", "id", params.getTagIds())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
                 )

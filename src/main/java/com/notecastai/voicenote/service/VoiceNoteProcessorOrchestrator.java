@@ -3,7 +3,12 @@ package com.notecastai.voicenote.service;
 import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
 import com.notecastai.integration.storage.StorageService;
+import com.notecastai.note.api.dto.CreateNoteRequest;
+import com.notecastai.note.api.dto.NoteDTO;
+import com.notecastai.note.domain.NoteType;
+import com.notecastai.note.service.NoteService;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
+import com.notecastai.voicenote.api.dto.VoiceNoteCreateRequest;
 import com.notecastai.voicenote.api.dto.VoiceNoteDTO;
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import com.notecastai.voicenote.service.impl.VoiceNoteHelper;
@@ -24,8 +29,9 @@ public class VoiceNoteProcessorOrchestrator {
 
     private final StorageService storageService;
     private final VoiceNoteHelper voiceNoteHelper;
+    private final NoteService noteService;
 
-    public VoiceNoteDTO processVoiceNote(Long voiceNoteId, MultipartFile file, TranscriptionLanguage preferredLanguage) {
+    public VoiceNoteDTO processVoiceNote(Long voiceNoteId, MultipartFile file, TranscriptionLanguage preferredLanguage, VoiceNoteCreateRequest request) {
         try {
             byte[] bytes = file.getBytes();
             String s3Key = buildS3Key(voiceNoteId, file.getOriginalFilename());
@@ -44,9 +50,19 @@ public class VoiceNoteProcessorOrchestrator {
             String s3Url = uploadFut.join();
             TranscriptionResult tr = transFut.join();
 
-            log.info("Voice note processing completed successfully: {}", voiceNoteId);
-            return voiceNoteHelper.saveTranscriptionResult(voiceNoteId, s3Url, tr);
+            NoteDTO note = noteService.create(CreateNoteRequest.builder()
+                    .title(request.getTitle())
+                    .tagIds(request.getTagIds())
+                    .type(NoteType.VOICENOTE)
+                    .knowledgeBase(tr.getTranscript())
+                    .formateType(request.getFormateType())
+                    .instructions(request.getUserInstructions())
+                    .build());
 
+            VoiceNoteDTO voiceNote = voiceNoteHelper.saveTranscriptionResult(voiceNoteId, s3Url, tr);
+
+            log.info("Voice note processing completed successfully: {}", voiceNoteId);
+            return voiceNote.withNote(note);
         } catch (Exception e) {
             log.error("Processing failed for voiceNoteId={}", voiceNoteId, e);
             voiceNoteHelper.updateWithError(voiceNoteId, "Processing failed: " + e.getMessage());

@@ -36,7 +36,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
-    // --- Persistence / DB ---
+    // --- Persistence / DB / cache ---
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"     // JPA + Hibernate
     runtimeOnly    "org.postgresql:postgresql"                                  // JDBC driver
 

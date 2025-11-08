@@ -10,6 +10,8 @@ import com.notecastai.notecast.domain.*;
 import com.notecastai.notecast.event.dto.NoteCastCreatedEvent;
 import com.notecastai.notecast.infrastructure.repo.NoteCastRepository;
 import com.notecastai.notecast.service.NoteCastService;
+import com.notecastai.tag.domain.TagEntity;
+import com.notecastai.tag.repo.TagRepository;
 import com.notecastai.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class NoteCastServiceImpl implements NoteCastService {
     private final UserService userService;
     private final NoteCastMapper mapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final TagRepository tagRepository;
 
     @org.springframework.beans.factory.annotation.Value("${application.domain}")
     private String applicationDomain;
@@ -144,12 +147,14 @@ public class NoteCastServiceImpl implements NoteCastService {
     }
 
     private NoteCastShortDTO toShortDTO(NoteCastEntity entity) {
+        NoteCastResponseDTO fullDto = mapper.toDto(entity);
         return NoteCastShortDTO.builder()
                 .id(entity.getId())
                 .noteId(entity.getNote().getId())
                 .noteTitle(entity.getNote().getTitle())
                 .status(entity.getStatus())
                 .style(entity.getStyle())
+                .tags(fullDto.getTags())
                 .createdDate(entity.getCreatedDate())
                 .build();
     }
@@ -232,5 +237,31 @@ public class NoteCastServiceImpl implements NoteCastService {
                 .shareToken(noteCast.getShareToken())
                 .expiresAt(noteCast.getShareExpiresAt())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public NoteCastResponseDTO addTag(Long noteCastId, Long tagId) {
+        NoteCastEntity noteCast = noteCastRepository.getOrThrow(noteCastId);
+        TagEntity tag = tagRepository.getById(tagId);
+
+        noteCast.getTags().add(tag);
+        NoteCastEntity savedNoteCast = noteCastRepository.save(noteCast);
+
+        log.info("Tag {} added to notecast {}", tagId, noteCastId);
+        return mapper.toDto(savedNoteCast);
+    }
+
+    @Override
+    @Transactional
+    public NoteCastResponseDTO removeTag(Long noteCastId, Long tagId) {
+        NoteCastEntity noteCast = noteCastRepository.getOrThrow(noteCastId);
+        TagEntity tag = tagRepository.getById(tagId);
+
+        noteCast.getTags().remove(tag);
+        NoteCastEntity savedNoteCast = noteCastRepository.save(noteCast);
+
+        log.info("Tag {} removed from notecast {}", tagId, noteCastId);
+        return mapper.toDto(savedNoteCast);
     }
 }

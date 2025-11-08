@@ -2,10 +2,14 @@ package com.notecastai.notecast.domain;
 
 import com.notecastai.common.BaseEntity;
 import com.notecastai.note.domain.NoteEntity;
+import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -73,5 +77,19 @@ public class NoteCastEntity extends BaseEntity {
 
     @Column(name = "share_expires_at")
     private java.time.Instant shareExpiresAt;
+
+    /** Tags (Many-to-Many via join table). */
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "note_cast_tag",
+            joinColumns = @JoinColumn(name = "note_cast_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"),
+            indexes = {
+                    @Index(name = "idx_notecasttag_notecast", columnList = "note_cast_id"),
+                    @Index(name = "idx_notecasttag_tag", columnList = "tag_id")
+            }
+    )
+    private Set<TagEntity> tags = new HashSet<>();
 
 }

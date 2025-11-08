@@ -233,6 +233,28 @@ public class CriteriaQueryBuilder<T extends Serializable> {
             return this;
         }
 
+        public PredicateBuilder<T> likeIgnoreCaseMultiple(String value, String... dotPaths) {
+            if (value == null || value.isBlank()) return this;
+            if (dotPaths == null || dotPaths.length == 0) return this;
+
+            predicates.add(ctx -> {
+                String pattern = "%" + escapeLike(value.toLowerCase(Locale.ROOT).trim()) + "%";
+                List<Predicate> orPredicates = new ArrayList<>();
+
+                for (String dotPath : dotPaths) {
+                    if (dotPath != null && !dotPath.isBlank()) {
+                        Expression<String> path = ctx.cb.lower(resolve(ctx.root, dotPath).as(String.class));
+                        orPredicates.add(ctx.cb.like(path, pattern, '\\'));
+                    }
+                }
+
+                if (orPredicates.isEmpty()) return null;
+                return ctx.cb.or(orPredicates.toArray(new Predicate[0]));
+            });
+
+            return this;
+        }
+
         private static String escapeLike(String s) {
             return s
                     .replace("\\", "\\\\")

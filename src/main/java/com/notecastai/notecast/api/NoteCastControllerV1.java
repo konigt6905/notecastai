@@ -207,4 +207,42 @@ public class NoteCastControllerV1 {
     ) {
         return noteCastService.generateShareLink(id);
     }
+
+    @Operation(
+            summary = "Add tag to notecast",
+            description = "Associate a tag with a specific notecast"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag added successfully"),
+            @ApiResponse(responseCode = "404", description = "NoteCast or tag not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PutMapping("/{noteCastId}/tags/{tagId}")
+    public NoteCastResponseDTO addTag(
+            @Parameter(description = "NoteCast ID", required = true)
+            @PathVariable Long noteCastId,
+            @Parameter(description = "Tag ID to add", required = true)
+            @PathVariable Long tagId
+    ) {
+        return noteCastService.addTag(noteCastId, tagId);
+    }
+
+    @Operation(
+            summary = "Remove tag from notecast",
+            description = "Remove a tag association from a specific notecast"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag removed successfully"),
+            @ApiResponse(responseCode = "404", description = "NoteCast not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @DeleteMapping("/{noteCastId}/tags/{tagId}")
+    public NoteCastResponseDTO removeTag(
+            @Parameter(description = "NoteCast ID", required = true)
+            @PathVariable Long noteCastId,
+            @Parameter(description = "Tag ID to remove", required = true)
+            @PathVariable Long tagId
+    ) {
+        return noteCastService.removeTag(noteCastId, tagId);
+    }
 }

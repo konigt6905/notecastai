@@ -21,6 +21,7 @@ public class VoiceNoteCreateRequest {
     private List<Long> tagIds; // Optional
     private String title; // Optional
     private String userInstructions; // Optional
+    private TranscriptionLanguage language; // Optional
     private FormateType formateType; // Optional
 
 }

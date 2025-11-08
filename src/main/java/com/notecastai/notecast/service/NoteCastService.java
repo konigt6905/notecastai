@@ -34,4 +34,8 @@ public interface NoteCastService {
 
     NoteCastShareResponse generateShareLink(Long id);
 
+    NoteCastResponseDTO addTag(Long noteCastId, Long tagId);
+
+    NoteCastResponseDTO removeTag(Long noteCastId, Long tagId);
+
 }

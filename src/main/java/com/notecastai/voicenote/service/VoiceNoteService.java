@@ -21,4 +21,8 @@ public interface VoiceNoteService {
 
     void updateWithError(Long voiceNoteId, String errorMessage);
 
+    VoiceNoteDTO addTag(Long voiceNoteId, Long tagId);
+
+    VoiceNoteDTO removeTag(Long voiceNoteId, Long tagId);
+
 }

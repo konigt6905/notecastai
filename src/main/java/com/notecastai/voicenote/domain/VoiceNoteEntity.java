@@ -2,11 +2,15 @@ package com.notecastai.voicenote.domain;
 
 import com.notecastai.common.BaseEntity;
 import com.notecastai.note.domain.NoteEntity;
+import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.user.domain.UserEntity;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -81,5 +85,18 @@ public class VoiceNoteEntity extends BaseEntity {
 
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
+
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "voice_note_tag",
+            joinColumns = @JoinColumn(name = "voice_note_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"),
+            indexes = {
+                    @Index(name = "idx_voicenotetag_voicenote", columnList = "voice_note_id"),
+                    @Index(name = "idx_voicenotetag_tag", columnList = "tag_id")
+            }
+    )
+    private Set<TagEntity> tags = new HashSet<>();
 
 }

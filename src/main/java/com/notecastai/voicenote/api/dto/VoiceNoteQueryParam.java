@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 public class VoiceNoteQueryParam {
 
+    private String search;
+
     private List<Long> tagIds;
 
     private VoiceNoteStatus status;

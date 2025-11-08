@@ -1,17 +1,18 @@
 package com.notecastai.voicenote.api.dto;
 
 
+import com.notecastai.note.api.dto.NoteDTO;
+import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
+@With
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoiceNoteDTO {
@@ -32,10 +33,11 @@ public class VoiceNoteDTO {
     private String s3Path;
     @NotNull
     private VoiceNoteStatus status;
-    private Long noteId;
+    private NoteDTO note;
     private String transcript;
-    private String language;
+    private TranscriptionLanguage language;
     private Integer durationSeconds;
+    private List<TagDTO> tags;
     @NotNull
     private Instant createdDate;
     @NotNull

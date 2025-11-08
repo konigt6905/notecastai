@@ -19,7 +19,7 @@ public class NotesQueryParam {
 
     private List<Long> tagIds;
 
-    private String titleLike;
+    private String search;
 
     private NoteType type;
 

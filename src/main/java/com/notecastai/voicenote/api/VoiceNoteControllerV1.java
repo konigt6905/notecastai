@@ -112,4 +112,42 @@ public class VoiceNoteControllerV1 {
     ) {
         voiceNoteService.delete(id);
     }
+
+    @Operation(
+            summary = "Add tag to voice note",
+            description = "Associate a tag with a specific voice note"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag added successfully"),
+            @ApiResponse(responseCode = "404", description = "Voice note or tag not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PutMapping("/{voiceNoteId}/tags/{tagId}")
+    public VoiceNoteDTO addTag(
+            @Parameter(description = "Voice note ID", required = true)
+            @PathVariable Long voiceNoteId,
+            @Parameter(description = "Tag ID to add", required = true)
+            @PathVariable Long tagId
+    ) {
+        return voiceNoteService.addTag(voiceNoteId, tagId);
+    }
+
+    @Operation(
+            summary = "Remove tag from voice note",
+            description = "Remove a tag association from a specific voice note"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tag removed successfully"),
+            @ApiResponse(responseCode = "404", description = "Voice note not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @DeleteMapping("/{voiceNoteId}/tags/{tagId}")
+    public VoiceNoteDTO removeTag(
+            @Parameter(description = "Voice note ID", required = true)
+            @PathVariable Long voiceNoteId,
+            @Parameter(description = "Tag ID to remove", required = true)
+            @PathVariable Long tagId
+    ) {
+        return voiceNoteService.removeTag(voiceNoteId, tagId);
+    }
 }

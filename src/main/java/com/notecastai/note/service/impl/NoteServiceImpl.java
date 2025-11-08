@@ -259,6 +259,9 @@ public class NoteServiceImpl implements NoteService {
                 .collect(Collectors.joining());
 
         // Create a new note request with combined knowledge base
+
+        log.debug("combined knowledge base: {}", combinedKnowledgeBase);
+
         CreateNoteRequest createRequest = CreateNoteRequest.builder()
                 .title(request.getTitle())
                 .knowledgeBase(combinedKnowledgeBase)
