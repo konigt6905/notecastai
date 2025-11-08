@@ -1,10 +1,7 @@
 package com.notecastai.voicenote.service.impl;
 
-import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.common.util.FileValidationUtil;
 import com.notecastai.common.util.SecurityUtils;
-import com.notecastai.integration.ai.TranscriptionService;
-import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
 import com.notecastai.note.api.dto.CreateNoteRequest;
 import com.notecastai.note.api.dto.NoteDTO;
 import com.notecastai.note.domain.NoteType;
@@ -22,15 +19,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -41,9 +35,8 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
     private final UserRepository userRepository;
     private final VoiceNoteMapper mapper;
     private final VoiceNoteProcessorOrchestrator voiceNoteProcessorOrchestrator;
-    private final TimestampJsonMapper timestampJsonMapper;
-    private final TranscriptionService transcriptionService;
     private final NoteService noteService;
+    private final VoiceNoteHelper voiceNoteHelper;
 
     @Override
     @Transactional
@@ -68,10 +61,10 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
                 .status(VoiceNoteStatus.PENDING)
                 .build();
 
-        entity = voiceNoteRepository.save(entity);
+        entity = voiceNoteHelper.saveAndFlush(entity);
         Long voiceNoteId = entity.getId();
 
-        voiceNoteProcessorOrchestrator.processVoiceNoteAsync(voiceNoteId, file, user.getPreferredLanguage());
+        voiceNoteProcessorOrchestrator.processVoiceNote(voiceNoteId, file, user.getPreferredLanguage());
 
         //re-attach
         entity = voiceNoteRepository.getOrThrow(entity.getId());
@@ -122,63 +115,6 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
         VoiceNoteEntity entity = voiceNoteRepository.getOrThrow(voiceNoteId);
         entity.setStatus(status);
         voiceNoteRepository.save(entity);
-    }
-
-    @Override
-    @Transactional
-    public void saveTranscriptionResult(
-            Long noteCastId,
-            String s3FileUrl,
-            TranscriptionResult result
-    ) {
-        VoiceNoteEntity voiceNote = voiceNoteRepository.getOrThrow(noteCastId);
-
-        // Set basic transcription data
-        voiceNote.setTranscript(result.getTranscript());
-        voiceNote.setLanguage(TranscriptionLanguage.fromCode(result.getLanguage()));
-        voiceNote.setLanguage(TranscriptionLanguage.fromCode(result.getLanguage()));
-        voiceNote.setDurationSeconds(result.getDurationSeconds());
-        voiceNote.setS3FileUrl(s3FileUrl);
-
-        // Serialize timestamps to JSON
-        if (result.getWordTimestamps() != null && !result.getWordTimestamps().isEmpty()) {
-            String wordTimestampsJson = timestampJsonMapper.serializeWordTimestamps(
-                    result.getWordTimestamps()
-            );
-            voiceNote.setWordTimestampsJson(wordTimestampsJson);
-        }
-
-        if (result.getSegmentTimestamps() != null && !result.getSegmentTimestamps().isEmpty()) {
-            String segmentTimestampsJson = timestampJsonMapper.serializeSegmentTimestamps(
-                    result.getSegmentTimestamps()
-            );
-            voiceNote.setSegmentTimestampsJson(segmentTimestampsJson);
-        }
-
-        // Set metadata
-        if (result.getMetadata() != null) {
-            voiceNote.setTranscriptProcessingTimeMs(result.getMetadata().getProcessingTimeMs());
-        }
-
-        voiceNote.setStatus(VoiceNoteStatus.PROCESSED);
-        mapper.toDto(voiceNoteRepository.save(voiceNote));
-    }
-
-    @Async("voiceNoteProcessingExecutor")
-    public CompletableFuture<TranscriptionResult> transcribeAsync(
-            InputStream audioStream,
-            String filename,
-            String contentType,
-            TranscriptionLanguage preferredLanguage) {
-        log.info("Starting async transcription for file: {}", filename);
-        return transcriptionService.transcribeAudioFile(audioStream, filename, contentType, preferredLanguage)
-                .whenComplete((result, error) -> {
-                    if (error != null) {
-                        log.error("Transcription failed for file: {}", filename, error);
-                    } else {
-                        log.info("Transcription completed for file: {}", filename);
-                    }
-                });
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

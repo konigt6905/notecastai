@@ -32,7 +32,6 @@ public abstract class BaseRepository<T, ID, D extends JpaRepository<T, ID>> {
     public T save(T entity) {
         return dao.save(entity);
     }
-
     public T saveAndFlush(T entity) {
         return dao.saveAndFlush(entity);
     }

@@ -47,7 +47,7 @@ public class VoiceNoteEntity extends BaseEntity {
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
-    @Column(name = "user_instructions", nullable = false)
+    @Column(name = "user_instructions")
     private String userInstructions;
 
     @Column(name = "s3_file_url", nullable = false)

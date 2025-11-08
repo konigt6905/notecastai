@@ -39,6 +39,10 @@ spring:
     default-schema: notecastai
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 clerk:
   issuer: ${CLERK_ISSUER:https://expert-anteater-71.clerk.accounts.dev}

@@ -53,11 +53,6 @@ public class VoiceNoteRepository extends BaseRepository<VoiceNoteEntity, Long, V
                 .paginate(pageable);
     }
 
-    @Override
-    public Optional<VoiceNoteEntity> findById(Long id) {
-        return super.findById(id);
-    }
-
     public Long countProcessedByUserAndPeriod(com.notecastai.user.domain.UserEntity user, java.time.Instant fromDate, java.time.Instant toDate) {
         return CriteriaQueryBuilder.forEntity(VoiceNoteEntity.class, entityManager)
                 .where(b -> b
