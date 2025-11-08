@@ -4,6 +4,7 @@ import com.notecastai.integration.ai.TranscriptionService;
 import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
 import com.notecastai.voicenote.api.Mapper.VoiceNoteMapper;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
+import com.notecastai.voicenote.api.dto.VoiceNoteDTO;
 import com.notecastai.voicenote.domain.VoiceNoteEntity;
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import com.notecastai.voicenote.repo.VoiceNoteRepository;
@@ -57,7 +58,7 @@ public class VoiceNoteHelper {
     }
 
     @Transactional
-    public void saveTranscriptionResult(
+    public VoiceNoteDTO saveTranscriptionResult(
             Long noteCastId,
             String s3FileUrl,
             TranscriptionResult result
@@ -92,7 +93,7 @@ public class VoiceNoteHelper {
         }
 
         voiceNote.setStatus(VoiceNoteStatus.PROCESSED);
-        mapper.toDto(voiceNoteRepository.saveAndFlush(voiceNote));
+        return mapper.toDto(voiceNoteRepository.saveAndFlush(voiceNote));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

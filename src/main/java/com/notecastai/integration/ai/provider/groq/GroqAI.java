@@ -36,9 +36,9 @@ public class GroqAI implements TranscriptionService {
 
             GroqWhisperModel model = GroqWhisperModel.WHISPER_LARGE_V3_TURBO;
 
-            // Build request
             GroqTranscriptionRequest request = GroqTranscriptionRequest.builder()
                     .audioStream(audioStream)
+                    .filename(filename)
                     .contentType(contentType)
                     .model(model)
                     .language(language)

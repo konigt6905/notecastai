@@ -64,21 +64,19 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
         entity = voiceNoteHelper.saveAndFlush(entity);
         Long voiceNoteId = entity.getId();
 
-        voiceNoteProcessorOrchestrator.processVoiceNote(voiceNoteId, file, user.getPreferredLanguage());
+        VoiceNoteDTO voiceNote = voiceNoteProcessorOrchestrator.processVoiceNote(voiceNoteId, file, user.getPreferredLanguage());
 
-        //re-attach
-        entity = voiceNoteRepository.getOrThrow(entity.getId());
         NoteDTO note = noteService.create(CreateNoteRequest.builder()
                 .title(request.getTitle())
                 .tagIds(request.getTagIds())
                 .type(NoteType.VOICENOTE)
-                .knowledgeBase(entity.getTranscript())
+                .knowledgeBase(voiceNote.getTranscript())
                 .formateType(request.getFormateType())
                 .instructions(request.getUserInstructions())
                 .build());
 
         return UploadVoiceNoteResponse.builder()
-                .voiceNote(mapper.toDto(entity))
+                .voiceNote(voiceNote)
                 .note(note)
                 .build();
     }

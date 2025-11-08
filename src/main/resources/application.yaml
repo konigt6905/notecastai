@@ -59,6 +59,11 @@ ai:
       url: https://api.groq.com
       key: ${AI_GROQ_API_KEY:PLACEHOLDER}
 
+  openai:
+    api:
+      url:
+      key: ${AI_OPENAI_KEY:PLACEHOLDER}
+
 # OpenAPI / Swagger Configuration
 springdoc:
   api-docs:

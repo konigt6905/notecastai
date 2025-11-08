@@ -27,7 +27,7 @@ public class GroqClient {
             log.debug("Calling Groq transcription API with model: {}", request.getModel().getModelId());
 
             ResponseEntity<String> responseEntity = groqRestClient.post()
-                    .uri("/audio/transcriptions")
+                    .uri("/openai/v1/audio/transcriptions")
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(request.toMultipartBody())
                     .retrieve()

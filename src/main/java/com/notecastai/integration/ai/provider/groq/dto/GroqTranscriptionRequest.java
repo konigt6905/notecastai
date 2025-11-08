@@ -22,6 +22,7 @@ import java.util.List;
 public class GroqTranscriptionRequest {
 
     private final InputStream audioStream;
+    private final String filename;
     private final String contentType;
     private final GroqWhisperModel model;
     private final TranscriptionLanguage language;
@@ -44,6 +45,7 @@ public class GroqTranscriptionRequest {
         // Add audio file
         HttpHeaders fileHeaders = new HttpHeaders();
         fileHeaders.setContentType(MediaType.parseMediaType(contentType));
+        fileHeaders.setContentDispositionFormData("file", filename != null ? filename : "audio.mp3");
         HttpEntity<InputStreamResource> fileEntity = new HttpEntity<>(
                 new InputStreamResource(audioStream),
                 fileHeaders

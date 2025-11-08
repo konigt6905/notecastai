@@ -1,19 +1,21 @@
 package com.notecastai.voicenote.service;
 
+import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
 import com.notecastai.integration.storage.StorageService;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
+import com.notecastai.voicenote.api.dto.VoiceNoteDTO;
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import com.notecastai.voicenote.service.impl.VoiceNoteHelper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+
+import static com.notecastai.common.exeption.BusinessException.BusinessCode.INTERNAL_ERROR;
 
 @Slf4j
 @Component
@@ -23,57 +25,32 @@ public class VoiceNoteProcessorOrchestrator {
     private final StorageService storageService;
     private final VoiceNoteHelper voiceNoteHelper;
 
-    @Transactional
-    public void processVoiceNote(Long voiceNoteId, MultipartFile file, TranscriptionLanguage preferredLanguage) {
+    public VoiceNoteDTO processVoiceNote(Long voiceNoteId, MultipartFile file, TranscriptionLanguage preferredLanguage) {
         try {
-            byte[] fileBytes = file.getBytes();
+            byte[] bytes = file.getBytes();
             String s3Key = buildS3Key(voiceNoteId, file.getOriginalFilename());
 
             voiceNoteHelper.updateStatus(voiceNoteId, VoiceNoteStatus.PROCESSING);
 
-            // Start both async operations in parallel
-            CompletableFuture<String> uploadFuture = storageService.putAsync(
-                    s3Key,
-                    new ByteArrayInputStream(fileBytes),
-                    file.getSize(),
-                    file.getContentType()
+            CompletableFuture<String> uploadFut = storageService.putAsync(
+                    s3Key, new ByteArrayInputStream(bytes), file.getSize(), file.getContentType()
             );
 
-            CompletableFuture<TranscriptionResult> transcriptionFuture =
-                    voiceNoteHelper.transcribeAsync(
-                            new ByteArrayInputStream(fileBytes),
-                            file.getOriginalFilename(),
-                            file.getContentType(),
-                            preferredLanguage
-                    );
+            CompletableFuture<TranscriptionResult> transFut = voiceNoteHelper.transcribeAsync(
+                    new ByteArrayInputStream(bytes), file.getOriginalFilename(), file.getContentType(), preferredLanguage
+            );
 
-            // Join both futures and update entity
-            CompletableFuture.allOf(uploadFuture, transcriptionFuture)
-                    .thenAccept(v -> {
-                        try {
-                            String s3FileUrl = uploadFuture.join();
-                            TranscriptionResult transcription = transcriptionFuture.join();
+            // Wait and combine results
+            String s3Url = uploadFut.join();
+            TranscriptionResult tr = transFut.join();
 
-                            voiceNoteHelper.saveTranscriptionResult(voiceNoteId, s3FileUrl, transcription);
-                            log.info("Voice note processing completed successfully: {}", voiceNoteId);
-                        } catch (Exception e) {
-                            log.error("Error completing voice note processing: {}", voiceNoteId, e);
-                            voiceNoteHelper.updateWithError(voiceNoteId, "Error completing processing: " + e.getMessage());
-                        }
-                    })
-                    .exceptionally(ex -> {
-                        log.error("Error processing voice note: {}", voiceNoteId, ex);
-                        voiceNoteHelper.updateWithError(voiceNoteId, "Processing failed: " + ex.getMessage());
-                        return null;
-                    });
+            log.info("Voice note processing completed successfully: {}", voiceNoteId);
+            return voiceNoteHelper.saveTranscriptionResult(voiceNoteId, s3Url, tr);
 
-        } catch (IOException e) {
-            log.error("Failed to read file bytes for voice note: {}", voiceNoteId, e);
-
-            voiceNoteHelper.updateWithError(voiceNoteId, "Failed to read file: " + e.getMessage());
         } catch (Exception e) {
-            log.error("Unexpected error processing voice note: {}", voiceNoteId, e);
-            voiceNoteHelper.updateWithError(voiceNoteId, "Unexpected error: " + e.getMessage());
+            log.error("Processing failed for voiceNoteId={}", voiceNoteId, e);
+            voiceNoteHelper.updateWithError(voiceNoteId, "Processing failed: " + e.getMessage());
+            throw BusinessException.of(INTERNAL_ERROR.append(" Error processing voice note"));
         }
     }
 
