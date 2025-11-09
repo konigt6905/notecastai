@@ -1,5 +1,6 @@
 package com.notecastai.integration.ai.validator;
 
+import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.notecastai.common.exeption.AiValidationException;
@@ -124,6 +125,13 @@ public class AiNoteResponseValidator {
         } catch (AiValidationException e) {
             throw e;
         } catch (Exception e) {
+            if (e instanceof JsonEOFException) {
+                throw new AiValidationException(
+                        "AI response was truncated (likely too long / cut off).",
+                        AiValidationException.Code.TOO_LONG_CONTENT,
+                        rawJson
+                );
+            }
             log.error("Failed to parse NewNoteAiResponse: {}", e.getMessage(), e);
             throw new AiValidationException("Failed to parse AI response: " + e.getMessage(), rawJson);
         }

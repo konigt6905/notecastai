@@ -168,30 +168,6 @@ public class NoteCastControllerV1 {
     }
 
     @Operation(
-            summary = "Regenerate notecast",
-            description = "Regenerate an existing notecast with optional style, voice, or size changes"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Regeneration started successfully"),
-            @ApiResponse(responseCode = "404", description = "NoteCast not found", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
-    })
-    @PostMapping("/{id}/regenerate")
-    public NoteCastResponseDTO regenerate(
-            @Parameter(description = "NoteCast ID", required = true)
-            @PathVariable Long id,
-            @Parameter(description = "New style for regeneration")
-            @RequestParam(required = false) NoteCastStyle style,
-            @Parameter(description = "New voice for regeneration")
-            @RequestParam(required = false) TtsVoice voice,
-            @Parameter(description = "New size for regeneration")
-            @RequestParam(required = false) TranscriptSize size
-    ) {
-        return noteCastService.regenerate(id, style, voice, size);
-    }
-
-    @Operation(
             summary = "Get shareable link for notecast",
             description = "Generate a shareable public link for a notecast"
     )

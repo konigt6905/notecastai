@@ -71,7 +71,8 @@ public class NoteCastServiceImpl implements NoteCastService {
                 entity.getId(),
                 note.getFormattedNote(),
                 request.getStyle(),
-                request.getSize()
+                request.getSize(),
+                request.getCustomInstructions()
         ));
 
         log.info("NoteCast created and event published: {} with voice: {}, size: {}",
@@ -157,46 +158,6 @@ public class NoteCastServiceImpl implements NoteCastService {
                 .tags(fullDto.getTags())
                 .createdDate(entity.getCreatedDate())
                 .build();
-    }
-
-    @Override
-    @Transactional
-    public NoteCastResponseDTO regenerate(Long id, NoteCastStyle style, TtsVoice voice, TranscriptSize size) {
-        NoteCastEntity noteCast = noteCastRepository.getOrThrow(id);
-
-        if (style != null) {
-            noteCast.setStyle(style);
-        }
-
-        if (voice != null) {
-            noteCast.setVoice(voice);
-        }
-
-        if (size != null) {
-            noteCast.setSize(size);
-        }
-
-        noteCast.setStatus(NoteCastStatus.WAITING_FOR_TRANSCRIPT);
-        noteCast.setTranscript(null); // Clear old transcript
-        noteCast.setS3FileUrl(null); // Clear old audio
-        noteCast.setErrorMessage(null); // Clear any previous errors
-
-        noteCast = noteCastRepository.save(noteCast);
-
-        // Publish event to trigger async regeneration
-        NoteEntity note = noteCast.getNote();
-        eventPublisher.publishEvent(new NoteCastCreatedEvent(
-                this,
-                noteCast.getId(),
-                note.getFormattedNote(),
-                noteCast.getStyle(),
-                noteCast.getSize()
-        ));
-
-        log.info("Regeneration triggered for notecast {} with style: {}, voice: {}, size: {}",
-                id, noteCast.getStyle(), noteCast.getVoice(), noteCast.getSize());
-
-        return mapper.toDto(noteCast);
     }
 
     @Override
