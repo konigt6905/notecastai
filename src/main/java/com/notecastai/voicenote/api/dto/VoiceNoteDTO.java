@@ -22,6 +22,8 @@ public class VoiceNoteDTO {
     @NotNull
     private Long userId;
     @NotNull
+    private String title;
+    @NotNull
     private String filename;
     @NotNull
     private String originalFilename;

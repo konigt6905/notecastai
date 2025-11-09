@@ -78,9 +78,6 @@ public class TranscriptResponseValidator {
 
             // Deep validation with size context
             validateTranscriptContent(response.getTranscript(), errors);
-            validateWordCount(response.getWordCount(), response.getTranscript(), expectedSize, errors);
-            validateSentenceCount(response.getTranscript(), expectedSize, errors);
-            validateEstimatedDuration(response.getEstimatedDuration(), errors);
 
             if (!errors.isEmpty()) {
                 log.error("TranscriptAiResponse validation failed: {}", String.join(", ", errors));
@@ -167,79 +164,6 @@ public class TranscriptResponseValidator {
         if (transcript.matches(".*\\d+\\.\\s+[A-Z].*")) {
             log.warn("Transcript might contain numbered lists (e.g., '1. Item')");
             // This is a warning, not necessarily an error for TTS
-        }
-    }
-
-    private void validateWordCount(Integer reportedWordCount, String transcript, TranscriptSize expectedSize, List<String> errors) {
-        if (reportedWordCount == null) {
-            errors.add("Word count is null");
-            return;
-        }
-
-        // Calculate actual word count
-        String[] words = transcript.trim().split("\\s+");
-        int actualWordCount = words.length;
-
-        // Check if reported matches actual (with small tolerance)
-        int difference = Math.abs(actualWordCount - reportedWordCount);
-        if (difference > 10) {
-            log.warn("Reported word count ({}) differs from actual ({}) by {}",
-                    reportedWordCount, actualWordCount, difference);
-            errors.add(String.format("Word count mismatch: reported %d, actual %d",
-                    reportedWordCount, actualWordCount));
-        }
-
-        // Check if within expected size range
-        int minWords = expectedSize.getMinWords();
-        int maxWords = expectedSize.getMaxWords();
-
-        if (actualWordCount < minWords) {
-            errors.add(String.format("Transcript too short for %s size: %d words (minimum %d)",
-                    expectedSize.getLabel(), actualWordCount, minWords));
-        } else if (actualWordCount > maxWords) {
-            errors.add(String.format("Transcript too long for %s size: %d words (maximum %d)",
-                    expectedSize.getLabel(), actualWordCount, maxWords));
-        }
-    }
-
-    private void validateSentenceCount(String transcript, TranscriptSize expectedSize, List<String> errors) {
-        // Count sentences (approximate - by periods, exclamation marks, question marks)
-        String[] sentences = transcript.split("[.!?]+");
-        int sentenceCount = 0;
-        for (String sentence : sentences) {
-            if (!sentence.trim().isEmpty()) {
-                sentenceCount++;
-            }
-        }
-
-        int minSentences = expectedSize.getMinSentences();
-        int maxSentences = expectedSize.getMaxSentences();
-
-        if (sentenceCount < minSentences) {
-            log.warn("Sentence count ({}) below minimum ({}) for {} size",
-                    sentenceCount, minSentences, expectedSize.getLabel());
-            errors.add(String.format("Too few sentences for %s size: %d (minimum %d)",
-                    expectedSize.getLabel(), sentenceCount, minSentences));
-        } else if (sentenceCount > maxSentences) {
-            log.warn("Sentence count ({}) above maximum ({}) for {} size",
-                    sentenceCount, maxSentences, expectedSize.getLabel());
-            errors.add(String.format("Too many sentences for %s size: %d (maximum %d)",
-                    expectedSize.getLabel(), sentenceCount, maxSentences));
-        }
-
-        log.debug("Sentence count: {} (target: {}-{})", sentenceCount, minSentences, maxSentences);
-    }
-
-    private void validateEstimatedDuration(String estimatedDuration, List<String> errors) {
-        if (estimatedDuration == null || estimatedDuration.isBlank()) {
-            errors.add("Estimated duration cannot be empty");
-            return;
-        }
-
-        // Check format: "X min Y sec" or "X min" or "Y sec"
-        Pattern durationPattern = Pattern.compile("^(\\d+\\s+min)?\\s*(\\d+\\s+sec)?$", Pattern.CASE_INSENSITIVE);
-        if (!durationPattern.matcher(estimatedDuration.trim()).matches()) {
-            errors.add("Estimated duration format invalid (expected: 'X min Y sec')");
         }
     }
 

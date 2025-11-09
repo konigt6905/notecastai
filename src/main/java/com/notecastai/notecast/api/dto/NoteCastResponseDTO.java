@@ -5,10 +5,7 @@ import com.notecastai.notecast.domain.NoteCastStyle;
 import com.notecastai.notecast.domain.TranscriptSize;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @NoArgsConstructor
+@With
 @AllArgsConstructor
 public class NoteCastResponseDTO {
 

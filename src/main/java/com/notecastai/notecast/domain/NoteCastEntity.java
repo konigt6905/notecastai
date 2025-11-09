@@ -54,7 +54,7 @@ public class NoteCastEntity extends BaseEntity {
     private TranscriptionLanguage language = TranscriptionLanguage.ENGLISH;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(name = "status", nullable = false, length = 60)
     private NoteCastStatus status;
 
     @Enumerated(EnumType.STRING)

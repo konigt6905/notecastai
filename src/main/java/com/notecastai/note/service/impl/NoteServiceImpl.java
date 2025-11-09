@@ -74,9 +74,10 @@ public class NoteServiceImpl implements NoteService {
             entity.setType(request.getType());
         }
 
+        log.info("Creating Note created: title={}, tags={}, actions={}",
+                entity.getTitle(), entity.getTags().size(), entity.getProposedAiActions().size());
+
         NoteEntity saved = noteRepository.save(entity);
-        log.info("Note created: id={}, title={}, tags={}, actions={}",
-                saved.getId(), saved.getTitle(), saved.getTags().size(), saved.getProposedAiActions().size());
 
         return mapper.toDto(saved);
     }

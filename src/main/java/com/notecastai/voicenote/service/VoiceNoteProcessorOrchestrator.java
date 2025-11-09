@@ -1,7 +1,7 @@
 package com.notecastai.voicenote.service;
 
 import com.notecastai.common.exeption.BusinessException;
-import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
+import com.notecastai.integration.ai.dto.TranscriptionResult;
 import com.notecastai.integration.storage.StorageService;
 import com.notecastai.note.api.dto.CreateNoteRequest;
 import com.notecastai.note.api.dto.NoteDTO;
@@ -56,10 +56,17 @@ public class VoiceNoteProcessorOrchestrator {
                     .type(NoteType.VOICENOTE)
                     .knowledgeBase(tr.getTranscript())
                     .formateType(request.getFormateType())
+                    .adjustTagsWithAi(true)
                     .instructions(request.getUserInstructions())
                     .build());
 
-            VoiceNoteDTO voiceNote = voiceNoteHelper.saveTranscriptionResult(voiceNoteId, s3Url, tr);
+            String title = request.getTitle();
+            if (request.getTitle() == null || request.getTitle().isBlank()) {
+                // AI adjusted title
+                title = note.getTitle();
+            }
+
+            VoiceNoteDTO voiceNote = voiceNoteHelper.saveTranscriptionResult(voiceNoteId, s3Url, tr, title);
 
             log.info("Voice note processing completed successfully: {}", voiceNoteId);
             return voiceNote.withNote(note);

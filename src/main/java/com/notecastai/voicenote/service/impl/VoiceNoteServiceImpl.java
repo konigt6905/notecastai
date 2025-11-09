@@ -46,7 +46,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
 
     @Override
     @Transactional
-    public UploadVoiceNoteResponse upload(VoiceNoteCreateRequest request) {
+    public CreateVoiceNoteResponse create(VoiceNoteCreateRequest request) {
         MultipartFile file = request.getFile();
 
         // Validate file
@@ -80,7 +80,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
         entity = voiceNoteRepository.getOrThrow(entity.getId());
         entity.setNote(noteRepository.getOrThrow(voiceNote.getNote().getId()));
 
-        return UploadVoiceNoteResponse.builder()
+        return CreateVoiceNoteResponse.builder()
                 .voiceNote(mapper.toDto(voiceNoteRepository.save(entity)))
                 .build();
     }
@@ -90,7 +90,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
     public VoiceNoteDTO getById(Long id) {
         VoiceNoteEntity entity = voiceNoteRepository.getOrThrow(id);
         VoiceNoteDTO dto = mapper.toDto(entity);
-        dto.setS3Path(s3StorageService.presignedGet(entity.getS3FileUrl()));
+        dto.setS3Path(s3StorageService.presignedAndGet(entity.getS3FileUrl()));
         return dto;
     }
 
@@ -168,7 +168,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
         log.info("Tag {} added to voice note {}", tagId, voiceNoteId);
 
         VoiceNoteDTO dto = mapper.toDto(savedVoiceNote);
-        dto.setS3Path(s3StorageService.presignedGet(savedVoiceNote.getS3FileUrl()));
+        dto.setS3Path(s3StorageService.presignedAndGet(savedVoiceNote.getS3FileUrl()));
         return dto;
     }
 
@@ -183,7 +183,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
         log.info("Tag {} removed from voice note {}", tagId, voiceNoteId);
 
         VoiceNoteDTO dto = mapper.toDto(savedVoiceNote);
-        dto.setS3Path(s3StorageService.presignedGet(savedVoiceNote.getS3FileUrl()));
+        dto.setS3Path(s3StorageService.presignedAndGet(savedVoiceNote.getS3FileUrl()));
         return dto;
     }
 

@@ -1,9 +1,8 @@
 package com.notecastai.notecast.api;
 
+import com.notecastai.config.TtsVoiceProperties;
 import com.notecastai.notecast.api.dto.*;
 import com.notecastai.notecast.api.mapper.TtsVoiceMapper;
-import com.notecastai.notecast.domain.NoteCastStyle;
-import com.notecastai.notecast.domain.TranscriptSize;
 import com.notecastai.notecast.domain.TtsVoice;
 import com.notecastai.notecast.service.NoteCastService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +34,7 @@ public class NoteCastControllerV1 {
 
     private final NoteCastService noteCastService;
     private final TtsVoiceMapper ttsVoiceMapper;
+    private final TtsVoiceProperties ttsVoiceProperties;
 
     @Operation(
             summary = "Create notecast",

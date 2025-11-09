@@ -2,6 +2,8 @@ package com.notecastai.notecast.service.impl;
 
 import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.common.util.SecurityUtils;
+import com.notecastai.config.TtsVoiceProperties;
+import com.notecastai.integration.storage.StorageService;
 import com.notecastai.note.domain.NoteEntity;
 import com.notecastai.note.infrastructure.repo.NoteRepository;
 import com.notecastai.notecast.api.dto.*;
@@ -35,11 +37,12 @@ public class NoteCastServiceImpl implements NoteCastService {
 
     private final NoteCastRepository noteCastRepository;
     private final NoteRepository noteRepository;
-    private final com.notecastai.user.infrastructure.repo.UserRepository userRepository;
     private final UserService userService;
     private final NoteCastMapper mapper;
     private final ApplicationEventPublisher eventPublisher;
     private final TagRepository tagRepository;
+    private final TtsVoiceProperties ttsVoiceProperties;
+    private final StorageService s3StorageService;
 
     @org.springframework.beans.factory.annotation.Value("${application.domain}")
     private String applicationDomain;
@@ -54,13 +57,14 @@ public class NoteCastServiceImpl implements NoteCastService {
             throw BusinessException.of(INVALID_REQUEST.append(" Note has no formatted content"));
         }
 
+        TtsVoice resolvedVoice = resolveVoiceForProvider(request.getVoice(), ttsVoiceProperties.getVoiceProvider());
+
         NoteCastEntity entity = NoteCastEntity.builder()
                 .note(note)
                 .status(NoteCastStatus.WAITING_FOR_TRANSCRIPT)
                 .style(request.getStyle())
                 .size(request.getSize())
-                .voice(request.getVoice() == null ?
-                        getUserDefaultVoice() : request.getVoice())
+                .voice(resolvedVoice)
                 .build();
 
         entity = noteCastRepository.save(entity);
@@ -72,24 +76,36 @@ public class NoteCastServiceImpl implements NoteCastService {
                 note.getFormattedNote(),
                 request.getStyle(),
                 request.getSize(),
-                request.getCustomInstructions()
+                request.getCustomInstructions(),
+                entity.getVoice()
         ));
 
         log.info("NoteCast created and event published: {} with voice: {}, size: {}",
-                entity.getId(), request.getVoice(), request.getSize());
+                entity.getId(), resolvedVoice, request.getSize());
 
         return mapper.toDto(entity);
     }
 
-    private TtsVoice getUserDefaultVoice() {
-        return userService.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getDefaultVoice();
+    private TtsVoice getUserDefaultVoice(TtsVoiceProvider provider) {
+        TtsVoice userVoice = userService.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getDefaultVoice();
+        if (userVoice != null && userVoice.supportsProvider(provider)) {
+            return userVoice;
+        }
+        return TtsVoice.getDefault(provider);
+    }
+
+    private TtsVoice resolveVoiceForProvider(TtsVoice requested, TtsVoiceProvider provider) {
+        if (requested != null && requested.supportsProvider(provider)) {
+            return requested;
+        }
+        return getUserDefaultVoice(provider);
     }
 
     @Override
     @Transactional(readOnly = true)
     public NoteCastResponseDTO getById(Long id) {
         NoteCastEntity entity = noteCastRepository.getOrThrow(id);
-        return mapper.toDto(entity);
+        return mapper.toDto(entity).withS3FileUrl(s3StorageService.presignedAndGet(entity.getS3FileUrl()));
     }
 
     @Override
@@ -136,6 +152,21 @@ public class NoteCastServiceImpl implements NoteCastService {
         NoteCastEntity entity = noteCastRepository.getOrThrow(noteCastId);
         entity.setTranscript(transcript);
         entity.setStatus(NoteCastStatus.WAITING_FOR_TTS);
+        noteCastRepository.save(entity);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateWithAudio(Long noteCastId,
+                                String s3FileKey,
+                                Integer durationSeconds,
+                                Long processingTimeMs) {
+        NoteCastEntity entity = noteCastRepository.getOrThrow(noteCastId);
+        entity.setS3FileUrl(s3FileKey);
+        entity.setDurationSeconds(durationSeconds);
+        entity.setProcessingTime(processingTimeMs != null
+                ? Math.max(1L, Math.round(processingTimeMs / 1000.0))
+                : null);
+        entity.setStatus(NoteCastStatus.PROCESSED);
         noteCastRepository.save(entity);
     }
 

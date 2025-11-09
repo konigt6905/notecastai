@@ -1,8 +1,14 @@
 package com.notecastai.integration.ai.provider.groq;
 
 import com.notecastai.integration.ai.TranscriptionService;
+import com.notecastai.integration.ai.dto.SegmentTimestamp;
+import com.notecastai.integration.ai.dto.TranscriptionMetadata;
+import com.notecastai.integration.ai.dto.TranscriptionResult;
+import com.notecastai.integration.ai.dto.WordTimestamp;
 import com.notecastai.integration.ai.provider.groq.client.GroqClient;
-import com.notecastai.integration.ai.provider.groq.dto.*;
+import com.notecastai.integration.ai.provider.groq.dto.GroqTranscriptionRequest;
+import com.notecastai.integration.ai.provider.groq.dto.GroqTranscriptionResponse;
+import com.notecastai.integration.ai.provider.groq.dto.GroqWhisperModel;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import io.github.resilience4j.retry.Retry;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Service("groqTranscriptionService")
 @RequiredArgsConstructor
 public class GroqAI implements TranscriptionService {
 

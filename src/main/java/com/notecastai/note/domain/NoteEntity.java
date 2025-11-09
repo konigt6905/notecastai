@@ -33,7 +33,7 @@ public class NoteEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false, length = 500)
     private String title;
 
     @Basic(fetch = FetchType.LAZY)

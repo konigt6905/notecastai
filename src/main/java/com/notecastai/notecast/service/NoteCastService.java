@@ -25,6 +25,8 @@ public interface NoteCastService {
 
     void updateWithTranscript(Long noteCastId, String transcript);
 
+    void updateWithAudio(Long noteCastId, String s3FileKey, Integer durationSeconds, Long processingTimeMs);
+
     void updateWithError(Long noteCastId, String errorMessage);
 
     NoteCastShareResponse generateShareLink(Long id);

@@ -93,7 +93,7 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public String presignedGet(String key) {
+    public String presignedAndGet(String key) {
         if (key == null || key.isEmpty()) return null;
 
         // try cache first

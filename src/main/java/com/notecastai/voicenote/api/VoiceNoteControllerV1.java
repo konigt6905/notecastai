@@ -36,10 +36,10 @@ public class VoiceNoteControllerV1 {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UploadVoiceNoteResponse upload(
+    public CreateVoiceNoteResponse upload(
             @Valid @ModelAttribute VoiceNoteCreateRequest request
     ) {
-        return voiceNoteService.upload(request);
+        return voiceNoteService.create(request);
     }
 
     @Operation(

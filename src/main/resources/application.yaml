@@ -61,8 +61,10 @@ ai:
 
   openai:
     api:
-      url:
+      url: https://api.openai.com/v1
       key: ${AI_OPENAI_KEY:PLACEHOLDER}
+  tts:
+    voice-provider: OPENAI
 
 # OpenAPI / Swagger Configuration
 springdoc:

@@ -1,4 +1,4 @@
-package com.notecastai.integration.ai.provider.groq.dto;
+package com.notecastai.integration.ai.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

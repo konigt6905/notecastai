@@ -1,6 +1,6 @@
 package com.notecastai.integration.ai;
 
-import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
+import com.notecastai.integration.ai.dto.TranscriptionResult;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 
 import java.io.InputStream;

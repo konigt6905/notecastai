@@ -11,7 +11,7 @@ public interface StorageService {
 
     CompletableFuture<String> putAsync(String key, InputStream data, long size, String contentType);
 
-    String presignedGet(String key);
+    String presignedAndGet(String key);
 
     void delete(String key);
 }

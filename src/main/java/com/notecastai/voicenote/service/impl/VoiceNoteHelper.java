@@ -1,15 +1,15 @@
 package com.notecastai.voicenote.service.impl;
 
 import com.notecastai.integration.ai.TranscriptionService;
-import com.notecastai.integration.ai.provider.groq.dto.TranscriptionResult;
+import com.notecastai.integration.ai.dto.TranscriptionResult;
 import com.notecastai.voicenote.api.Mapper.VoiceNoteMapper;
 import com.notecastai.voicenote.api.dto.TranscriptionLanguage;
 import com.notecastai.voicenote.api.dto.VoiceNoteDTO;
 import com.notecastai.voicenote.domain.VoiceNoteEntity;
 import com.notecastai.voicenote.domain.VoiceNoteStatus;
 import com.notecastai.voicenote.repo.VoiceNoteRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,13 +20,19 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class VoiceNoteHelper {
 
     private final VoiceNoteRepository voiceNoteRepository;
     private final VoiceNoteMapper mapper;
     private final TimestampJsonMapper timestampJsonMapper;
     private final TranscriptionService transcriptionService;
+
+    public VoiceNoteHelper(VoiceNoteRepository voiceNoteRepository, VoiceNoteMapper mapper, TimestampJsonMapper timestampJsonMapper, @Qualifier("openAiAudioService") TranscriptionService transcriptionService) {
+        this.voiceNoteRepository = voiceNoteRepository;
+        this.mapper = mapper;
+        this.timestampJsonMapper = timestampJsonMapper;
+        this.transcriptionService = transcriptionService;
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateStatus(Long voiceNoteId, VoiceNoteStatus status) {
@@ -61,11 +67,13 @@ public class VoiceNoteHelper {
     public VoiceNoteDTO saveTranscriptionResult(
             Long noteCastId,
             String s3FileUrl,
-            TranscriptionResult result
+            TranscriptionResult result,
+            String title
     ) {
         VoiceNoteEntity voiceNote = voiceNoteRepository.getOrThrow(noteCastId);
 
         // Set basic transcription data
+        voiceNote.setTitle(title);
         voiceNote.setTranscript(result.getTranscript());
         voiceNote.setLanguage(TranscriptionLanguage.fromCode(result.getLanguage()));
         voiceNote.setLanguage(TranscriptionLanguage.fromCode(result.getLanguage()));

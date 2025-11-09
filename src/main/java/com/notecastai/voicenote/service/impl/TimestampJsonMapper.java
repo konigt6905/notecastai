@@ -2,8 +2,8 @@ package com.notecastai.voicenote.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.notecastai.integration.ai.provider.groq.dto.SegmentTimestamp;
-import com.notecastai.integration.ai.provider.groq.dto.WordTimestamp;
+import com.notecastai.integration.ai.dto.SegmentTimestamp;
+import com.notecastai.integration.ai.dto.WordTimestamp;
 import com.notecastai.voicenote.domain.TimestampJsonModels.SegmentTimestampJson;
 import com.notecastai.voicenote.domain.TimestampJsonModels.SegmentTimestampsWrapper;
 import com.notecastai.voicenote.domain.TimestampJsonModels.WordTimestampJson;

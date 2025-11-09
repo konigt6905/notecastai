@@ -35,6 +35,9 @@ public class VoiceNoteEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @Column(name = "title", length = 500)
+    private String title;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")
     private NoteEntity note;

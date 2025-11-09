@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface VoiceNoteService {
 
-    UploadVoiceNoteResponse upload(VoiceNoteCreateRequest request);
+    CreateVoiceNoteResponse create(VoiceNoteCreateRequest request);
 
     VoiceNoteDTO getById(Long id);
 
