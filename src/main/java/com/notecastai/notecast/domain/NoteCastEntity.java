@@ -35,6 +35,9 @@ public class NoteCastEntity extends BaseEntity {
     @JoinColumn(name = "note_id", nullable = false)
     private NoteEntity note;
 
+    @Column(name = "title", length = 500)
+    private String title;
+
     @Column(name = "s3_file_url")
     private String s3FileUrl;
 

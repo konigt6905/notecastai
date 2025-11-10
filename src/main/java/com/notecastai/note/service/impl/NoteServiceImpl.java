@@ -86,7 +86,7 @@ public class NoteServiceImpl implements NoteService {
         if (request.getTitle() != null && !request.getTitle().isBlank() && !request.isAdjustTitleWithAi()) {
             return request.getTitle();
         }
-        return aiResponse.getFormattedNote();
+        return aiResponse.getAdjustedTitle();
     }
 
     private Set<TagEntity> getTags(CreateNoteRequest request, NewNoteAiResponse aiResponse){

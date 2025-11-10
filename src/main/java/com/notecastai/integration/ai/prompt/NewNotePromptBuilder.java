@@ -118,7 +118,7 @@ public class NewNotePromptBuilder {
     public String getUserPrompt() {
         String titleDisplay = (title != null && !title.isBlank())
                 ? "\"" + title + "\""
-                : "(no title provided - please create one)";
+                : "(no title provided - please create one according the context in knowledgeable)";
 
         String formatTypeDisplay = formateType != null
                 ? formateType.getLabel() + " - " + formateType.getPromptText()

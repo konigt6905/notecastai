@@ -21,6 +21,7 @@ public class NoteCastCreateRequest {
     private NoteCastStyle style;
     @NotNull
     private TranscriptSize size;
+    private String title; // Optional
     private String customInstructions; // Optional
     private TtsVoice voice; // Optional
 

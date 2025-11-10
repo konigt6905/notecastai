@@ -23,7 +23,7 @@ public class NoteCastShortDTO {
     @NotNull
     private Long noteId;
     @NotNull
-    private String noteTitle;
+    private String title;
     @NotNull
     private NoteCastStatus status;
     @NotNull

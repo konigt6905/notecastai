@@ -59,8 +59,16 @@ public class NoteCastServiceImpl implements NoteCastService {
 
         TtsVoice resolvedVoice = resolveVoiceForProvider(request.getVoice(), ttsVoiceProperties.getVoiceProvider());
 
+        // Determine title: use request title if provided, otherwise fall back to note title
+        String title = request.getTitle();
+        if (title == null || title.isBlank()) {
+            log.info("Title is null or blank, falling back to note title: {}", note.getTitle());
+            title = note.getTitle();
+        }
+
         NoteCastEntity entity = NoteCastEntity.builder()
                 .note(note)
+                .title(title)
                 .status(NoteCastStatus.WAITING_FOR_TRANSCRIPT)
                 .style(request.getStyle())
                 .size(request.getSize())
@@ -183,7 +191,7 @@ public class NoteCastServiceImpl implements NoteCastService {
         return NoteCastShortDTO.builder()
                 .id(entity.getId())
                 .noteId(entity.getNote().getId())
-                .noteTitle(entity.getNote().getTitle())
+                .title(entity.getTitle())
                 .status(entity.getStatus())
                 .style(entity.getStyle())
                 .tags(fullDto.getTags())

@@ -63,6 +63,7 @@ public class VoiceNoteProcessorOrchestrator {
             String title = request.getTitle();
             if (request.getTitle() == null || request.getTitle().isBlank()) {
                 // AI adjusted title
+                log.info("Title is null or blank setting note title: {}", note.getTitle());
                 title = note.getTitle();
             }
 

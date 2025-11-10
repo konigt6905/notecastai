@@ -19,6 +19,7 @@ public class NoteCastResponseDTO {
 
     private Long id;
     private Long noteId;
+    private String title;
     private String s3FileUrl;
     private String transcript;
     private Integer durationSeconds;

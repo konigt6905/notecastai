@@ -19,10 +19,10 @@ import java.util.Set;
 @SuperBuilder
 @Entity
 @Table(
-        name = "audio_file",
+        name = "voice_note",
         indexes = {
-                @Index(name = "idx_audio_user", columnList = "user_id"),
-                @Index(name = "idx_audio_status", columnList = "status")
+                @Index(name = "idx_voice_note_user", columnList = "user_id"),
+                @Index(name = "idx_voice_note_status", columnList = "status")
         }
 )
 public class VoiceNoteEntity extends BaseEntity {
