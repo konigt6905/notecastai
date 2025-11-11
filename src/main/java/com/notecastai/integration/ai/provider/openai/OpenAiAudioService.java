@@ -45,16 +45,16 @@ public class OpenAiAudioService implements TranscriptionService, TextToSpeechSer
     private static final Map<TtsVoice, String> VOICE_MAPPING = new EnumMap<>(TtsVoice.class);
 
     static {
+        // Map Kokoro voices to OpenAI voices
         VOICE_MAPPING.put(TtsVoice.BELLA, "alloy");
         VOICE_MAPPING.put(TtsVoice.NICOLE, "verse");
-        VOICE_MAPPING.put(TtsVoice.SKY, "opal");
-        VOICE_MAPPING.put(TtsVoice.ECHO, "sol");
-        VOICE_MAPPING.put(TtsVoice.LIAM, "orion");
-        VOICE_MAPPING.put(TtsVoice.MICHAEL, "atticus");
-        VOICE_MAPPING.put(TtsVoice.ERIC, "alloy");
-        VOICE_MAPPING.put(TtsVoice.HART, "ember");
-        VOICE_MAPPING.put(TtsVoice.PUNCH, "nova");
-        VOICE_MAPPING.put(TtsVoice.FENRIR, "sol");
+        VOICE_MAPPING.put(TtsVoice.SKY, "shimmer");
+        VOICE_MAPPING.put(TtsVoice.LIAM, "onyx");
+        VOICE_MAPPING.put(TtsVoice.MICHAEL, "ash");
+        VOICE_MAPPING.put(TtsVoice.ERIC, "cedar");
+        VOICE_MAPPING.put(TtsVoice.HART, "onyx");
+        VOICE_MAPPING.put(TtsVoice.PUNCH, "echo");
+        VOICE_MAPPING.put(TtsVoice.FENRIR, "echo");
     }
 
     private final OpenAiClient openAiClient;

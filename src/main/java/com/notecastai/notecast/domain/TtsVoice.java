@@ -28,7 +28,7 @@ public enum TtsVoice {
             "audio/kokoro/sky.wav",
             TtsVoiceProvider.KOKORO),
 
-    ECHO("echo_af", "Echo", "en", "female",
+    ECHO_K("echo_af", "Echo", "en", "female",
             "Ethereal female voice with unique resonant characteristics",
             "audio/kokoro/echo.wav",
             TtsVoiceProvider.KOKORO),
@@ -64,40 +64,25 @@ public enum TtsVoice {
             "audio/kokoro/renrir.wav",
             TtsVoiceProvider.KOKORO),
 
-    // OpenAI voices
+    // OpenAI voices - Updated to match current API
     ALLOY("alloy", "Alloy", "en", "neutral",
             "Balanced OpenAI voice with warm tone suitable for narration and explainers.",
             "audio/openai/alloy.wav",
             TtsVoiceProvider.OPENAI),
 
-    VERSE("verse", "Verse", "en", "female",
-            "Expressive OpenAI female voice with gentle pacing for conversational content.",
-            "audio/openai/verse.wav",
+    ECHO("echo", "Echo", "en", "male",
+            "Deep resonant OpenAI male voice with commanding presence.",
+            "audio/openai/echo.wav",
             TtsVoiceProvider.OPENAI),
 
-    ATTICUS("atticus", "Atticus", "en", "male",
-            "Deep cinematic OpenAI male voice ideal for dramatic storytelling.",
-            "audio/openai/atticus.wav",
+    FABLE("fable", "Fable", "en", "neutral",
+            "Storytelling OpenAI voice ideal for narration and audiobooks.",
+            "audio/openai/fable.wav",
             TtsVoiceProvider.OPENAI),
 
-    LYRIC("lyric", "Lyric", "en", "female",
-            "Friendly OpenAI voice with bright tone for upbeat explainers.",
-            "audio/openai/lyric.wav",
-            TtsVoiceProvider.OPENAI),
-
-    ORION("orion", "Orion", "en", "male",
-            "Confident OpenAI voice with crisp delivery for professional narration.",
-            "audio/openai/orion.wav",
-            TtsVoiceProvider.OPENAI),
-
-    EMBER("ember", "Ember", "en", "female",
-            "Warm storyteller OpenAI voice with subtle emotional range.",
-            "audio/openai/ember.wav",
-            TtsVoiceProvider.OPENAI),
-
-    SOL("sol", "Sol", "en", "male",
-            "Relaxed OpenAI voice with smooth cadence for long-form listening.",
-            "audio/openai/sol.wav",
+    ONYX("onyx", "Onyx", "en", "male",
+            "Deep authoritative OpenAI male voice perfect for professional content.",
+            "audio/openai/onyx.wav",
             TtsVoiceProvider.OPENAI),
 
     NOVA("nova", "Nova", "en", "female",
@@ -105,14 +90,44 @@ public enum TtsVoice {
             "audio/openai/nova.wav",
             TtsVoiceProvider.OPENAI),
 
-    LUMEN("lumen", "Lumen", "en", "neutral",
-            "Crystal-clear OpenAI neutral voice optimized for product explainers.",
-            "audio/openai/lumen.wav",
+    SHIMMER("shimmer", "Shimmer", "en", "female",
+            "Bright and uplifting OpenAI female voice with positive energy.",
+            "audio/openai/shimmer.wav",
             TtsVoiceProvider.OPENAI),
 
-    CALLIOPE("calliope", "Calliope", "en", "female",
-            "Theatrical OpenAI voice delivering expressive emphasis and flair.",
-            "audio/openai/calliope.wav",
+    CORAL("coral", "Coral", "en", "female",
+            "Warm and friendly OpenAI female voice for conversational content.",
+            "audio/openai/coral.wav",
+            TtsVoiceProvider.OPENAI),
+
+    VERSE("verse", "Verse", "en", "female",
+            "Expressive OpenAI female voice with gentle pacing for conversational content.",
+            "audio/openai/verse.wav",
+            TtsVoiceProvider.OPENAI),
+
+    BALLAD("ballad", "Ballad", "en", "female",
+            "Melodic OpenAI female voice with lyrical quality.",
+            "audio/openai/ballad.wav",
+            TtsVoiceProvider.OPENAI),
+
+    ASH("ash", "Ash", "en", "male",
+            "Calm and steady OpenAI male voice for professional narration.",
+            "audio/openai/ash.wav",
+            TtsVoiceProvider.OPENAI),
+
+    SAGE("sage", "Sage", "en", "neutral",
+            "Wise and mature OpenAI voice for educational and informative content.",
+            "audio/openai/sage.wav",
+            TtsVoiceProvider.OPENAI),
+
+    MARIN("marin", "Marin", "en", "female",
+            "Crisp and clear OpenAI female voice for articulate delivery.",
+            "audio/openai/marin.wav",
+            TtsVoiceProvider.OPENAI),
+
+    CEDAR("cedar", "Cedar", "en", "male",
+            "Rich and warm OpenAI male voice with natural tone.",
+            "audio/openai/cedar.wav",
             TtsVoiceProvider.OPENAI);
 
     private final String id;

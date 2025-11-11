@@ -25,7 +25,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.notecastai.common.exeption.BusinessException.BusinessCode.INVALID_REQUEST;
@@ -74,6 +76,17 @@ public class NoteCastServiceImpl implements NoteCastService {
                 .size(request.getSize())
                 .voice(resolvedVoice)
                 .build();
+
+        if (Boolean.TRUE.equals(request.getTakeTagsFromNote())) {
+            // Copy tags from note
+            log.info("Copying tags from note {} to notecast", note.getId());
+            entity.setTags(new HashSet<>(note.getTags()));
+        } else if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            String currentUserId = SecurityUtils.getCurrentClerkUserIdOrThrow();
+            Long userId = userService.getByClerkUserId(currentUserId).getId();
+            Set<TagEntity> tags = resolveAndValidateTags(userId, request.getTagIds());
+            entity.setTags(tags);
+        }
 
         entity = noteCastRepository.save(entity);
 
@@ -263,5 +276,16 @@ public class NoteCastServiceImpl implements NoteCastService {
 
         log.info("Tag {} removed from notecast {}", tagId, noteCastId);
         return mapper.toDto(savedNoteCast);
+    }
+
+    private Set<TagEntity> resolveAndValidateTags(Long userId, List<Long> tagIds) {
+        if (tagIds == null || tagIds.isEmpty()) return Set.of();
+        Set<TagEntity> result = new HashSet<>();
+        for (Long tagId : tagIds) {
+            if (tagId == null) continue;
+            TagEntity tag = tagRepository.findByIdAndUserOrThrow(tagId, userId);
+            result.add(tag);
+        }
+        return result;
     }
 }

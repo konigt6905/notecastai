@@ -11,15 +11,18 @@ import java.util.stream.Collectors;
 public enum TtsVoicesOpenAi {
 
     ALLOY(TtsVoice.ALLOY),
-    VERSE(TtsVoice.VERSE),
-    ATTICUS(TtsVoice.ATTICUS),
-    LYRIC(TtsVoice.LYRIC),
-    ORION(TtsVoice.ORION),
-    EMBER(TtsVoice.EMBER),
-    SOL(TtsVoice.SOL),
+    ECHO(TtsVoice.ECHO),
+    FABLE(TtsVoice.FABLE),
+    ONYX(TtsVoice.ONYX),
     NOVA(TtsVoice.NOVA),
-    LUMEN(TtsVoice.LUMEN),
-    CALLIOPE(TtsVoice.CALLIOPE);
+    SHIMMER(TtsVoice.SHIMMER),
+    CORAL(TtsVoice.CORAL),
+    VERSE(TtsVoice.VERSE),
+    BALLAD(TtsVoice.BALLAD),
+    ASH(TtsVoice.ASH),
+    SAGE(TtsVoice.SAGE),
+    MARIN(TtsVoice.MARIN),
+    CEDAR(TtsVoice.CEDAR);
 
     private final TtsVoice voice;
 

@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -24,5 +26,7 @@ public class NoteCastCreateRequest {
     private String title; // Optional
     private String customInstructions; // Optional
     private TtsVoice voice; // Optional
+    private Boolean takeTagsFromNote; // Optional - if true, copy tags from note
+    private List<Long> tagIds; // Optional - specific tag IDs to assign
 
 }
