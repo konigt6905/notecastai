@@ -113,9 +113,14 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-            return mapper.toDto(userRepository.save(UserEntity.builder()
+            UserEntity saved = userRepository.save(UserEntity.builder()
                     .clerkUserId(clerkUserId)
-                    .build()));
+                    .build());
+
+            // Initialize default tags for new user
+            tagService.createDefaultTagsForUser(saved.getId());
+
+            return mapper.toDto(saved);
         } catch (DataIntegrityViolationException e) {
             // If two parallel first requests race, unique constraint wins; just re-read.
             return mapper.toDto(userRepository.getByClerkUserId(clerkUserId));
@@ -156,7 +161,10 @@ public class UserServiceImpl implements UserService {
         // indicating this user was auto-provisioned
         UserEntity saved = userRepository.save(newUser);
 
-        log.info("Created user: id={}, email={}, name={}",
+        // Initialize default tags for new user
+        tagService.createDefaultTagsForUser(saved.getId());
+
+        log.info("Created user: id={}, email={}, name={}, with default tags",
                 saved.getId(), saved.getEmail(), saved.getFullName());
 
         return mapper.toDto(saved);

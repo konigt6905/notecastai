@@ -5,6 +5,7 @@ import com.notecastai.tag.api.mapper.TagMapper;
 import com.notecastai.tag.api.dto.TagCreateRequest;
 import com.notecastai.tag.api.dto.TagDTO;
 import com.notecastai.tag.api.dto.TagUpdateRequest;
+import com.notecastai.tag.domain.DefaultTag;
 import com.notecastai.tag.domain.TagEntity;
 import com.notecastai.tag.repo.TagRepository;
 import com.notecastai.tag.service.TagService;
@@ -24,12 +25,6 @@ import static com.notecastai.common.exeption.BusinessException.BusinessCode.*;
 public class TagServiceImpl implements TagService {
 
     public static final int MAX_TAGS_PER_USER = 50;
-
-    /** Default set created for every new user. */
-    private static final List<String> DEFAULT_TAGS = List.of(
-            "Inbox", "Work", "Personal", "Ideas", "Learning",
-            "Projects", "Meetings", "Research", "Todos", "Archived"
-    );
 
     private final TagRepository tagRepository;
     private final TagMapper mapper;
@@ -109,7 +104,7 @@ public class TagServiceImpl implements TagService {
         UserEntity user = userRepository.getOrThrow(userId);
 
         List<TagEntity> tags = new ArrayList<>();
-        for (String tagName : DEFAULT_TAGS) {
+        for (String tagName : DefaultTag.getAllTagNames()) {
             TagEntity e = TagEntity.builder()
                     .user(user)
                     .name(tagName)

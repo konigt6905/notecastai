@@ -148,23 +148,30 @@ public class NoteCastControllerV1 {
     }
 
     @Operation(
-            summary = "Get voice preview audio",
-            description = "Stream the preview audio file for a specific TTS voice"
+            summary = "Get voice sample audio by enum name",
+            description = "Stream the sample audio file for a specific TTS voice using its enum name (e.g., ALLOY, ECHO, FABLE)"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Audio file streamed successfully"),
             @ApiResponse(responseCode = "404", description = "Voice not found", content = @Content)
     })
-    @GetMapping("/voices/preview/{voiceId}")
-    public ResponseEntity<Resource> getVoicePreview(
-            @Parameter(description = "Voice ID", required = true)
-            @PathVariable String voiceId
+    @GetMapping("/voices/{voiceEnumName}/sample")
+    public ResponseEntity<Resource> getVoiceSample(
+            @Parameter(description = "Voice enum name (e.g., ALLOY, ECHO, FABLE)", required = true)
+            @PathVariable String voiceEnumName
     ) {
-        TtsVoice voice = TtsVoice.fromId(voiceId);
+        try {
+            TtsVoice voice = TtsVoice.valueOf(voiceEnumName.toUpperCase());
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("audio/wav"))
-                .body(new ClassPathResource(voice.getSampleResourcePath()));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("audio/wav"))
+                    .body(new ClassPathResource(voice.getSampleResourcePath()));
+        } catch (IllegalArgumentException e) {
+            throw com.notecastai.common.exeption.BusinessException.of(
+                    com.notecastai.common.exeption.BusinessException.BusinessCode.ENTITY_NOT_FOUND
+                            .append(": Voice '" + voiceEnumName + "' not found")
+            );
+        }
     }
 
     @Operation(

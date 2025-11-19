@@ -44,7 +44,7 @@ public class NoteCastRepository extends BaseRepository<NoteCastEntity, Long, Not
                 .where(b -> b
                         .equal("note.user.id", userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow()).getId())
                         .equal("note.id", params.getNoteId())
-                        .joinIn("note.tags", "id", params.getTagIds())
+                        .joinIn("tags", "id", params.getTagIds())
                         .equal("status", params.getStatus())
                         .greaterThanOrEqual("createdDate", params.getFrom())
                         .lessThan("createdDate", params.getTo())
