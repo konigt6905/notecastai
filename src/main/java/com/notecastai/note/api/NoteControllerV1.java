@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -235,7 +236,7 @@ public class NoteControllerV1 {
             @ApiResponse(responseCode = "400", description = "Invalid format", content = @Content)
     })
     @GetMapping("/{id}/export")
-    public org.springframework.http.ResponseEntity<byte[]> exportNote(
+    public ResponseEntity<byte[]> exportNote(
             @Parameter(
                     description = "Export format",
                     required = false,
@@ -247,7 +248,7 @@ public class NoteControllerV1 {
     ) {
         byte[] content = noteService.exportNote(id, format);
         String fileName = "note_" + id + "." + format.getExtension();
-        return org.springframework.http.ResponseEntity.ok()
+        return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
                 .header("Content-Type", format.getContentType())
                 .body(content);

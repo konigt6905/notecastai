@@ -1,7 +1,11 @@
 package com.notecastai.integration.ai.provider.openrouter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.notecastai.common.exeption.BusinessException;
 import com.notecastai.common.exeption.TechnicalException;
 import com.notecastai.common.util.SecurityUtils;
+import com.notecastai.integration.ai.dto.GameNoteAiRequest;
+import com.notecastai.integration.ai.dto.GameNoteAiResponse;
 import com.notecastai.integration.ai.NoteAiChat;
 import com.notecastai.integration.ai.NoteAiEditor;
 import com.notecastai.integration.ai.NoteCastTranscriptGenerator;
@@ -12,6 +16,7 @@ import com.notecastai.integration.ai.provider.openrouter.client.JsonSchemaBuilde
 import com.notecastai.integration.ai.provider.openrouter.client.OpenRouterClient;
 import com.notecastai.integration.ai.provider.openrouter.dto.*;
 import com.notecastai.integration.ai.validator.AiNoteResponseValidator;
+import com.notecastai.integration.ai.validator.GameNoteResponseValidator;
 import com.notecastai.integration.ai.validator.TranscriptResponseValidator;
 import com.notecastai.note.api.dto.*;
 import com.notecastai.note.domain.FormateType;
@@ -43,7 +48,9 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
     private final UserRepository userRepository;
     private final AiNoteResponseValidator noteValidator;
     private final TranscriptResponseValidator validator;
+    private final GameNoteResponseValidator gameNoteValidator;
     private final Retry noteAiRetry;
+    private final ObjectMapper objectMapper;
 
     @Override
     public NewNoteAiResponse adjustNote(CreateNoteRequest request) {
@@ -270,5 +277,102 @@ public class OpenRouterAi implements NoteAiEditor, NoteCastTranscriptGenerator, 
 
         log.debug("Converted {} history messages to OpenRouter format", converted.size());
         return converted;
+    }
+
+    @Override
+    public GameNoteAiResponse generateGameQuestions(GameNoteAiRequest request) {
+        log.info("Generating game questions: type={}, difficulty={}, count={}",
+                request.getQuestionType(), request.getDifficulty(), request.getNumberOfQuestions());
+
+        // Select appropriate prompt builder based on question type
+        String systemPrompt;
+        String userPrompt;
+        OpenRouterJsonSchema jsonSchema;
+
+        switch (request.getQuestionType()) {
+            case FLASHCARD -> {
+                GameNoteFlashcardPromptBuilder builder = GameNoteFlashcardPromptBuilder.builder()
+                        .noteTitle(request.getNoteTitle())
+                        .noteContent(request.getNoteContent())
+                        .numberOfQuestions(request.getNumberOfQuestions())
+                        .questionLength(request.getQuestionLength())
+                        .answerLength(request.getAnswerLength())
+                        .difficulty(request.getDifficulty())
+                        .customInstructions(request.getCustomInstructions())
+                        .build();
+                systemPrompt = builder.getSystemPrompt();
+                userPrompt = builder.getUserPrompt();
+                jsonSchema = JsonSchemaBuilder.buildGameNoteFlashcardSchema();
+            }
+            case MULTIPLE_CHOICE -> {
+                GameNoteMultipleChoicePromptBuilder builder = GameNoteMultipleChoicePromptBuilder.builder()
+                        .noteTitle(request.getNoteTitle())
+                        .noteContent(request.getNoteContent())
+                        .numberOfQuestions(request.getNumberOfQuestions())
+                        .questionLength(request.getQuestionLength())
+                        .answerLength(request.getAnswerLength())
+                        .difficulty(request.getDifficulty())
+                        .customInstructions(request.getCustomInstructions())
+                        .build();
+                systemPrompt = builder.getSystemPrompt();
+                userPrompt = builder.getUserPrompt();
+                jsonSchema = JsonSchemaBuilder.buildGameNoteMultipleChoiceSchema();
+            }
+            case TRUE_FALSE -> {
+                GameNoteTrueFalsePromptBuilder builder = GameNoteTrueFalsePromptBuilder.builder()
+                        .noteTitle(request.getNoteTitle())
+                        .noteContent(request.getNoteContent())
+                        .numberOfQuestions(request.getNumberOfQuestions())
+                        .questionLength(request.getQuestionLength())
+                        .answerLength(request.getAnswerLength())
+                        .difficulty(request.getDifficulty())
+                        .customInstructions(request.getCustomInstructions())
+                        .build();
+                systemPrompt = builder.getSystemPrompt();
+                userPrompt = builder.getUserPrompt();
+                jsonSchema = JsonSchemaBuilder.buildGameNoteTrueFalseSchema();
+            }
+            case OPEN_QUESTION -> {
+                GameNoteOpenQuestionPromptBuilder builder = GameNoteOpenQuestionPromptBuilder.builder()
+                        .noteTitle(request.getNoteTitle())
+                        .noteContent(request.getNoteContent())
+                        .numberOfQuestions(request.getNumberOfQuestions())
+                        .questionLength(request.getQuestionLength())
+                        .answerLength(request.getAnswerLength())
+                        .difficulty(request.getDifficulty())
+                        .customInstructions(request.getCustomInstructions())
+                        .build();
+                systemPrompt = builder.getSystemPrompt();
+                userPrompt = builder.getUserPrompt();
+                jsonSchema = JsonSchemaBuilder.buildGameNoteOpenQuestionSchema();
+            }
+            default -> throw BusinessException.of(BusinessException.BusinessCode.INVALID_REQUEST
+                    .append(" Unknown question type: " + request.getQuestionType()));
+        }
+
+        return Retry.decorateSupplier(noteAiRetry, () -> {
+            log.debug("Calling OpenRouter AI for {} question generation", request.getQuestionType());
+
+            OpenRouterResponse response = openRouterClient.chatCompletion(
+                    OpenRouterModel.GROK_FAST_1,
+                    systemPrompt,
+                    userPrompt,
+                    jsonSchema
+            );
+
+            // Validate and parse with validator
+            GameNoteAiResponse aiResponse = gameNoteValidator.validateGameNoteResponse(
+                    response.getContent(),
+                    request.getQuestionType(),
+                    request.getNumberOfQuestions()
+            );
+
+            log.info("Game questions generated and validated successfully: type={}, count={}/{}",
+                    request.getQuestionType(),
+                    aiResponse.getQuestions().size(),
+                    request.getNumberOfQuestions());
+
+            return aiResponse;
+        }).get();
     }
 }

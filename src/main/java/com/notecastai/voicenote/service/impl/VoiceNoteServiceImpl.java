@@ -47,10 +47,7 @@ public class VoiceNoteServiceImpl implements VoiceNoteService {
     @Override
     @Transactional
     public CreateVoiceNoteResponse create(VoiceNoteCreateRequest request) {
-        MultipartFile file = request.getFile();
-
-        // Validate file
-        FileValidationUtil.validateAudioFile(file);
+        MultipartFile file = FileValidationUtil.validateAndNormalizeIfNeeded(request.getFile());
 
         UserEntity user = userRepository.getByClerkUserId(SecurityUtils.getCurrentClerkUserIdOrThrow());
 

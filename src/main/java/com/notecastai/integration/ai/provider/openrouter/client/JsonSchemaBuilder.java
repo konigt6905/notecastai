@@ -137,4 +137,228 @@ public class JsonSchemaBuilder {
                 ))
                 .build();
     }
+
+    /**
+     * Build schema for Flashcard game questions
+     */
+    public static OpenRouterJsonSchema buildGameNoteFlashcardSchema() {
+        return OpenRouterJsonSchema.builder()
+                .name("flashcard_questions_response")
+                .strict(true)
+                .schema(Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "questions", Map.of(
+                                        "type", "array",
+                                        "description", "Array of flashcard questions",
+                                        "items", Map.of(
+                                                "type", "object",
+                                                "properties", Map.of(
+                                                        "id", Map.of(
+                                                                "type", "integer",
+                                                                "description", "Sequential question ID starting from 1"
+                                                        ),
+                                                        "type", Map.of(
+                                                                "type", "string",
+                                                                "description", "Must be FLASHCARD",
+                                                                "enum", List.of("FLASHCARD")
+                                                        ),
+                                                        "questionText", Map.of(
+                                                                "type", "string",
+                                                                "description", "The flashcard question"
+                                                        ),
+                                                        "answer", Map.of(
+                                                                "type", "string",
+                                                                "description", "The answer to the flashcard question"
+                                                        ),
+                                                        "explanation", Map.of(
+                                                                "type", "string",
+                                                                "description", "Explanation providing additional context"
+                                                        ),
+                                                        "hint", Map.of(
+                                                                "type", "string",
+                                                                "description", "Optional hint to help recall"
+                                                        )
+                                                ),
+                                                "required", List.of("id", "type", "questionText", "answer"),
+                                                "additionalProperties", false
+                                        ),
+                                        "minItems", 1
+                                )
+                        ),
+                        "required", List.of("questions"),
+                        "additionalProperties", false
+                ))
+                .build();
+    }
+
+    /**
+     * Build schema for Multiple Choice game questions
+     */
+    public static OpenRouterJsonSchema buildGameNoteMultipleChoiceSchema() {
+        return OpenRouterJsonSchema.builder()
+                .name("multiple_choice_questions_response")
+                .strict(true)
+                .schema(Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "questions", Map.of(
+                                        "type", "array",
+                                        "description", "Array of multiple choice questions",
+                                        "items", Map.of(
+                                                "type", "object",
+                                                "properties", Map.of(
+                                                        "id", Map.of(
+                                                                "type", "integer",
+                                                                "description", "Sequential question ID starting from 1"
+                                                        ),
+                                                        "type", Map.of(
+                                                                "type", "string",
+                                                                "description", "Must be MULTIPLE_CHOICE",
+                                                                "enum", List.of("MULTIPLE_CHOICE")
+                                                        ),
+                                                        "questionText", Map.of(
+                                                                "type", "string",
+                                                                "description", "The multiple choice question"
+                                                        ),
+                                                        "options", Map.of(
+                                                                "type", "array",
+                                                                "description", "Exactly 4 answer options with letters A, B, C, D",
+                                                                "items", Map.of("type", "string"),
+                                                                "minItems", 4,
+                                                                "maxItems", 4
+                                                        ),
+                                                        "correctAnswer", Map.of(
+                                                                "type", "string",
+                                                                "description", "The correct answer (must match one option exactly)"
+                                                        ),
+                                                        "explanation", Map.of(
+                                                                "type", "string",
+                                                                "description", "Detailed explanation of why the answer is correct"
+                                                        ),
+                                                        "hint", Map.of(
+                                                                "type", "string",
+                                                                "description", "Optional hint to guide thinking"
+                                                        )
+                                                ),
+                                                "required", List.of("id", "type", "questionText", "options", "correctAnswer", "explanation"),
+                                                "additionalProperties", false
+                                        ),
+                                        "minItems", 1
+                                )
+                        ),
+                        "required", List.of("questions"),
+                        "additionalProperties", false
+                ))
+                .build();
+    }
+
+    /**
+     * Build schema for True/False game questions
+     */
+    public static OpenRouterJsonSchema buildGameNoteTrueFalseSchema() {
+        return OpenRouterJsonSchema.builder()
+                .name("true_false_questions_response")
+                .strict(true)
+                .schema(Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "questions", Map.of(
+                                        "type", "array",
+                                        "description", "Array of true/false questions",
+                                        "items", Map.of(
+                                                "type", "object",
+                                                "properties", Map.of(
+                                                        "id", Map.of(
+                                                                "type", "integer",
+                                                                "description", "Sequential question ID starting from 1"
+                                                        ),
+                                                        "type", Map.of(
+                                                                "type", "string",
+                                                                "description", "Must be TRUE_FALSE",
+                                                                "enum", List.of("TRUE_FALSE")
+                                                        ),
+                                                        "questionText", Map.of(
+                                                                "type", "string",
+                                                                "description", "A declarative statement (not a question)"
+                                                        ),
+                                                        "correctAnswer", Map.of(
+                                                                "type", "string",
+                                                                "description", "Must be exactly 'true' or 'false' (lowercase)",
+                                                                "enum", List.of("true", "false")
+                                                        ),
+                                                        "explanation", Map.of(
+                                                                "type", "string",
+                                                                "description", "Explanation of why the statement is true or false"
+                                                        ),
+                                                        "hint", Map.of(
+                                                                "type", "string",
+                                                                "description", "Optional hint to guide reasoning"
+                                                        )
+                                                ),
+                                                "required", List.of("id", "type", "questionText", "correctAnswer", "explanation"),
+                                                "additionalProperties", false
+                                        ),
+                                        "minItems", 1
+                                )
+                        ),
+                        "required", List.of("questions"),
+                        "additionalProperties", false
+                ))
+                .build();
+    }
+
+    /**
+     * Build schema for Open Question game questions
+     */
+    public static OpenRouterJsonSchema buildGameNoteOpenQuestionSchema() {
+        return OpenRouterJsonSchema.builder()
+                .name("open_question_response")
+                .strict(true)
+                .schema(Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "questions", Map.of(
+                                        "type", "array",
+                                        "description", "Array of open-ended questions",
+                                        "items", Map.of(
+                                                "type", "object",
+                                                "properties", Map.of(
+                                                        "id", Map.of(
+                                                                "type", "integer",
+                                                                "description", "Sequential question ID starting from 1"
+                                                        ),
+                                                        "type", Map.of(
+                                                                "type", "string",
+                                                                "description", "Must be OPEN_QUESTION",
+                                                                "enum", List.of("OPEN_QUESTION")
+                                                        ),
+                                                        "questionText", Map.of(
+                                                                "type", "string",
+                                                                "description", "The open-ended question requiring explanation"
+                                                        ),
+                                                        "answer", Map.of(
+                                                                "type", "string",
+                                                                "description", "Comprehensive model answer"
+                                                        ),
+                                                        "explanation", Map.of(
+                                                                "type", "string",
+                                                                "description", "Key points or guidance for a good answer"
+                                                        ),
+                                                        "hint", Map.of(
+                                                                "type", "string",
+                                                                "description", "Optional hint to guide thinking direction"
+                                                        )
+                                                ),
+                                                "required", List.of("id", "type", "questionText", "answer"),
+                                                "additionalProperties", false
+                                        ),
+                                        "minItems", 1
+                                )
+                        ),
+                        "required", List.of("questions"),
+                        "additionalProperties", false
+                ))
+                .build();
+    }
 }

@@ -1,4 +1,4 @@
-package com.notecastai.notecast.event.dto;
+package com.notecastai.notecast.domain.event;
 
 import com.notecastai.notecast.domain.NoteCastStyle;
 import com.notecastai.notecast.domain.TranscriptSize;

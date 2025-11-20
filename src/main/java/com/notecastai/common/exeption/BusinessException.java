@@ -24,7 +24,9 @@ public class BusinessException extends RuntimeException {
         RESOURCE_NOT_FOUND("Resource not found"),
         CONFLICT("Conflict "),
         FORBIDDEN("Forbidden "),
-        FEATURE_NOT_IMPLEMENTED("Feature not implemented");
+        FEATURE_NOT_IMPLEMENTED("Feature not implemented"),
+        LIMIT_EXCEEDED("Maximum limit exceeded"),
+        AI_RESPONSE_PARSE_ERROR("Failed to parse AI response");
 
         private final String defaultMessage;
         private String appender = "";

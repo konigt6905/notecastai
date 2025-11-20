@@ -9,7 +9,7 @@ import com.notecastai.note.infrastructure.repo.NoteRepository;
 import com.notecastai.notecast.api.dto.*;
 import com.notecastai.notecast.api.mapper.NoteCastMapper;
 import com.notecastai.notecast.domain.*;
-import com.notecastai.notecast.event.dto.NoteCastCreatedEvent;
+import com.notecastai.notecast.domain.event.NoteCastCreatedEvent;
 import com.notecastai.notecast.infrastructure.repo.NoteCastRepository;
 import com.notecastai.notecast.service.NoteCastService;
 import com.notecastai.tag.domain.TagEntity;

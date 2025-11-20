@@ -1,4 +1,4 @@
-package com.notecastai.notecast.event;
+package com.notecastai.notecast.service.impl;
 
 import com.notecastai.common.exeption.AiValidationException;
 import com.notecastai.integration.ai.NoteCastTranscriptGenerator;
@@ -7,7 +7,7 @@ import com.notecastai.integration.ai.dto.TextToSpeechRequest;
 import com.notecastai.integration.ai.dto.TextToSpeechResult;
 import com.notecastai.integration.storage.StorageService;
 import com.notecastai.notecast.domain.NoteCastStatus;
-import com.notecastai.notecast.event.dto.NoteCastCreatedEvent;
+import com.notecastai.notecast.domain.event.NoteCastCreatedEvent;
 import com.notecastai.notecast.service.NoteCastService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
