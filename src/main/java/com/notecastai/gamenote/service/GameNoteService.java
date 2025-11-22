@@ -2,8 +2,11 @@ package com.notecastai.gamenote.service;
 
 import com.notecastai.gamenote.api.dto.*;
 import com.notecastai.gamenote.domain.GameNoteStatus;
+import com.notecastai.integration.ai.dto.GameNoteAiRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface GameNoteService {
 
@@ -18,6 +21,10 @@ public interface GameNoteService {
     void updateStatus(Long gameNoteId, GameNoteStatus status);
 
     void updateWithError(Long gameNoteId, String errorMessage);
+
+    void updateWithQuestions(Long gameNoteId, List<GameQuestionDTO> questions);
+
+    GameNoteAiRequest buildAiRequest(Long gameNoteId);
 
     GameNoteDTO addTag(Long gameNoteId, Long tagId);
 

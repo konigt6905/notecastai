@@ -166,6 +166,64 @@ public class GameNoteServiceImpl implements GameNoteService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateWithQuestions(Long id, List<com.notecastai.gamenote.api.dto.GameQuestionDTO> questions) {
+        GameNoteEntity entity = gameNoteRepository.getOrThrow(id);
+
+        // Clear existing questions
+        entity.getQuestions().clear();
+
+        // Add new questions
+        int order = 0;
+        for (com.notecastai.gamenote.api.dto.GameQuestionDTO questionDto : questions) {
+            com.notecastai.gamenote.domain.GameQuestionEntity questionEntity =
+                    com.notecastai.gamenote.domain.GameQuestionEntity.builder()
+                    .gameNote(entity)
+                    .questionOrder(order++)
+                    .type(questionDto.getType())
+                    .questionText(questionDto.getQuestionText())
+                    .options(questionDto.getOptions() != null
+                            ? new java.util.ArrayList<>(questionDto.getOptions())
+                            : new java.util.ArrayList<>())
+                    .correctAnswer(questionDto.getCorrectAnswer())
+                    .answer(questionDto.getAnswer())
+                    .explanation(questionDto.getExplanation())
+                    .hint(questionDto.getHint())
+                    .build();
+
+            entity.addQuestion(questionEntity);
+        }
+
+        // Update status to PROCESSED and clear any error message
+        entity.setStatus(GameNoteStatus.PROCESSED);
+        entity.setErrorMessage(null);
+        gameNoteRepository.save(entity);
+
+        log.info("GameNote questions updated: id={}, questionsCount={}", id, questions.size());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public com.notecastai.integration.ai.dto.GameNoteAiRequest buildAiRequest(Long id) {
+        GameNoteEntity entity = gameNoteRepository.getOrThrow(id);
+        NoteEntity sourceNote = entity.getSourceNote();
+
+        // Get note content (prefer knowledge base, fallback to formatted note)
+        String noteContent = getNoteContent(sourceNote);
+
+        return com.notecastai.integration.ai.dto.GameNoteAiRequest.builder()
+                .noteTitle(sourceNote.getTitle())
+                .noteContent(noteContent)
+                .numberOfQuestions(entity.getNumberOfQuestions())
+                .questionLength(entity.getQuestionLength())
+                .answerLength(entity.getAnswerLength())
+                .difficulty(entity.getDifficulty())
+                .questionType(entity.getQuestionType())
+                .customInstructions(entity.getCustomInstructions())
+                .build();
+    }
+
+    @Override
     @Transactional
     public GameNoteDTO addTag(Long id, Long tagId) {
         GameNoteEntity entity = gameNoteRepository.getOrThrow(id);
@@ -216,5 +274,17 @@ public class GameNoteServiceImpl implements GameNoteService {
                 request.getQuestionType().name().replace("_", " "),
                 request.getDifficulty().getLabel()
         );
+    }
+
+    private String getNoteContent(NoteEntity sourceNote) {
+        // Prefer knowledge base, fallback to formatted note
+        String content = sourceNote.getKnowledgeBase();
+        if (content == null || content.isBlank()) {
+            content = sourceNote.getFormattedNote();
+        }
+        if (content == null || content.isBlank()) {
+            throw new IllegalStateException("Source note has no content");
+        }
+        return content;
     }
 }
