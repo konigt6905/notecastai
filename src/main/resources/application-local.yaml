@@ -1,0 +1,70 @@
+# ===========================================================================
+# LOCAL DEVELOPMENT PROFILE
+# ===========================================================================
+# Activate: SPRING_PROFILES_ACTIVE=local (default)
+# Prerequisites: PostgreSQL via docker-compose, Clerk dev instance
+# Swagger UI: http://localhost:8080/swagger-ui.html
+# ===========================================================================
+
+# --- Application ---
+application:
+  domain: http://localhost:5174
+
+# --- Database (docker-compose defaults) ---
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/notecastai?currentSchema=notecastai}
+    username: ${SPRING_DATASOURCE_USERNAME:notecastai}
+    password: ${SPRING_DATASOURCE_PASSWORD:notecastai123}
+
+# --- Authentication (Clerk dev instance) ---
+clerk:
+  issuer: ${CLERK_ISSUER}
+  jwks: ${CLERK_JWKS}
+  audience: ${CLERK_AUDIENCE}
+
+# --- Object storage (MinIO, S3-compatible) ---
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin}
+  bucket: ${MINIO_BUCKET:notecastai-local}
+  region: ${MINIO_REGION:us-east-1}
+
+# --- AI Providers (replace with real keys to test AI features) ---
+ai:
+  openrouter:
+    api:
+      key: PLACEHOLDER
+  openai:
+    api:
+      key: PLACEHOLDER
+
+# --- Swagger (full access) ---
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    defaultModelsExpandDepth: -1
+    displayRequestDuration: true
+    filter: true
+    try-it-out-enabled: true
+  show-actuator: true
+
+# --- Actuator (all endpoints for debugging) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,configprops
+
+# --- Logging (verbose for development) ---
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    com.notecastai: debug
+    org.springframework.security: debug

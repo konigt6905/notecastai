@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: notecastai-db
+    environment:
+      POSTGRES_DB: notecastai
+      POSTGRES_USER: notecastai
+      POSTGRES_PASSWORD: notecastai123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notecastai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: notecastai-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notecastai
+      SPRING_DATASOURCE_USERNAME: notecastai
+      SPRING_DATASOURCE_PASSWORD: notecastai123
+      SPRING_PROFILES_ACTIVE: local
+      CLERK_JWKS: ${CLERK_JWKS}
+      AI_OPENROUTER_API_KEY: ${AI_OPENROUTER_API_KEY}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

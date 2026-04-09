@@ -1,0 +1,87 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.notecastai'
+version = '0.0.1-SNAPSHOT'
+description = 'Notecastai Backend'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // --- Spring Boot: web, validation, actuator ---
+    implementation "org.springframework.boot:spring-boot-starter-web"          // REST API, Jackson, Tomcat
+    implementation "org.springframework.boot:spring-boot-starter-validation"   // @Valid, Bean Validation
+    implementation "org.springframework.boot:spring-boot-starter-actuator"     // /actuator health/metrics
+
+    // --- Security / Auth (Clerk JWT via resource server) ---
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+
+    // --- Persistence / DB / cache ---
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"     // JPA + Hibernate
+    runtimeOnly    "org.postgresql:postgresql"                                  // JDBC driver
+
+    // --- Migrations ---
+    implementation "org.flywaydb:flyway-core"
+    implementation "org.flywaydb:flyway-database-postgresql"
+
+    // --- Mapping (DTO <-> entity) ---
+    implementation       "org.mapstruct:mapstruct:1.6.3"
+    annotationProcessor  "org.mapstruct:mapstruct-processor:1.6.3"
+    annotationProcessor  "org.projectlombok:lombok-mapstruct-binding:0.2.0"     // Lombok + MapStruct
+
+    // --- Resilience / Rate limiting ---
+    implementation "io.github.resilience4j:resilience4j-retry:2.2.0"
+    implementation "io.github.resilience4j:resilience4j-ratelimiter:2.2.0"
+    implementation "io.github.resilience4j:resilience4j-spring-boot3:2.2.0"
+
+    // --- Per-user API rate limiting (Bucket4j + Caffeine cache) ---
+    implementation "com.bucket4j:bucket4j-core:8.10.1"
+
+    // --- S3-compatible object storage (MinIO via AWS SDK v2) ---
+    implementation platform("software.amazon.awssdk:bom:2.25.66")
+    implementation "software.amazon.awssdk:s3"
+
+    // --- OpenAPI / Swagger Documentation ---
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
+    // --- Document Export Libraries ---
+    // PDF Export - Apache PDFBox (Apache License 2.0)
+    implementation "org.apache.pdfbox:pdfbox:2.0.31"
+    // DOCX Export - Apache POI (Apache License 2.0)
+    implementation "org.apache.poi:poi-ooxml:5.2.5"
+
+    // --- Build-time helpers ---
+    compileOnly        "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    // --- Testing ---
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testRuntimeOnly    "org.junit.platform:junit-platform-launcher"
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

@@ -1,0 +1,33 @@
+# ===========================================================================
+# PRODUCTION PROFILE
+# ===========================================================================
+# Activate: SPRING_PROFILES_ACTIVE=prod
+# All credentials MUST come from environment variables or AWS Parameter Store.
+# No defaults, no fallbacks — missing vars will fail on startup.
+# Swagger disabled, actuator locked down, health details hidden.
+# ===========================================================================
+
+# --- Swagger (disabled) ---
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# --- Actuator (health + info only, no details exposed) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+
+# --- Logging (minimal, no sensitive data) ---
+logging:
+  level:
+    org.hibernate.SQL: warn
+    com.notecastai: info
+    org.springframework.security: warn

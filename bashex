@@ -1,0 +1,27 @@
+BASE_PKG="com.notecastai"
+SRC="src/main/java"
+FEATURES=(notes audio transcription itinerary)
+LAYOUT=(
+  "api"
+  "api/dto"
+  "api/mapper"
+  "application"
+  "domain/model"
+  "infrastructure/persistence"
+  "config"
+)
+
+for f in "${FEATURES[@]}"; do
+  for p in "${LAYOUT[@]}"; do
+    dir="$SRC/$(echo $BASE_PKG | tr '.' '/')/$f/$p"
+    mkdir -p "$dir"
+    # create a placeholder Java file for quick open (optional)
+    pkg="$(echo $BASE_PKG.$f.$p | tr '/' '.' | sed 's/\.$//')"
+    className="$(echo ${p##*/} | sed -r 's/[^a-zA-Z]//g' | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
+    if [ ! -f "$dir/.keep" ]; then
+      echo "// package $pkg" > "$dir/.keep"
+    fi
+  done
+done
+
+echo "Created feature packages under $SRC/$(echo $BASE_PKG | tr '.' '/')"

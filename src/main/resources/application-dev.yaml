@@ -1,0 +1,34 @@
+# ===========================================================================
+# DEV (deployed staging) PROFILE
+# ===========================================================================
+# Activate: SPRING_PROFILES_ACTIVE=dev
+# All credentials from environment variables or AWS Parameter Store.
+# Swagger enabled for QA/testing, actuator partially exposed.
+# ===========================================================================
+
+# --- Swagger (enabled for QA) ---
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    defaultModelsExpandDepth: -1
+    displayRequestDuration: true
+    filter: true
+    try-it-out-enabled: true
+  show-actuator: true
+
+# --- Actuator (extended but no beans/configprops) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+
+# --- Logging ---
+logging:
+  level:
+    com.notecastai: debug
+    org.springframework.security: info
